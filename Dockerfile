@@ -37,7 +37,7 @@ FROM scratch
 # Copy our static executable.
 COPY --from=builder /go/bin/goAuth /go/bin/goAuth
 
-EXPOSE 5050
+EXPOSE 80
 # Run the hello binary.
 ENTRYPOINT ["/go/bin/goAuth"]
 

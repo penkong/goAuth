@@ -47,5 +47,5 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start() error {
-	return http.ListenAndServe("localhost:5050", server.r)
+	return http.ListenAndServe("localhost:80", server.r)
 }
