@@ -6,7 +6,7 @@ FROM golang:alpine AS builder
 LABEL author="mazdak nazemi"
 # Install git.
 # Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git
+# RUN apk update && apk add --no-cache git
 WORKDIR $GOPATH/src/github.com/penkong/goAuth
 # We want to populate the module cache based on the go.{mod,sum} files.
 COPY go.mod .
