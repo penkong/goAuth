@@ -2,10 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/lib/pq"
+	"github.com/penkong/goAuth/api"
 	"github.com/penkong/goAuth/util"
-	// "github.com/penkong/goAuth/api"
 	// db "github.com/penkong/goAuth/db/sqlc"
 	// "github.com/penkong/goAuth/util"
 )
@@ -13,6 +14,30 @@ import (
 var db *sql.DB
 
 func main() {
-	config, err := util.LoadConfig('.')
-	
+
+	// Load up config files with viper
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	// Open connection to database in this case Postgres13
+	_, err = sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal("db not connected!!!", err)
+	}
+
+	// // Create new Store - DB logic
+
+	// // Create Server Instance
+	server, err := api.NewServer(config)
+	if err != nil {
+		log.Fatal("server creation error!!!", err)
+	}
+
+	// // Start up server on port 5050
+	err = server.Start()
+	if err != nil {
+		log.Fatal("server start problem", err)
+	}
 }
