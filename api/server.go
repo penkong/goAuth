@@ -6,7 +6,6 @@ import (
 
 	"github.com/penkong/goAuth/controllers"
 	token "github.com/penkong/goAuth/services"
-	"github.com/penkong/goAuth/util"
 
 	// db "github.com/penkong/goAuth/db/sqlc"
 	// "github.com/techschool/simplebank/util"
@@ -15,21 +14,21 @@ import (
 
 // Server serves HTTP requests for our banking service.
 type Server struct {
-	config util.Config
+	// config util.Config
 	// store      db.Store
 	tokenMaker token.Maker
 	r          *httprouter.Router
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(config util.Config) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
+func NewServer() (*Server, error) {
+	tokenMaker, err := token.NewJWTMaker("436546456435983958349634853hgfhfghfghfghfghfghfg")
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
 
 	server := &Server{
-		config:     config,
+		// config:     config,
 		tokenMaker: tokenMaker,
 	}
 
@@ -48,5 +47,5 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start() error {
-	return http.ListenAndServe(server.config.ServerAddress, server.r)
+	return http.ListenAndServe("localhost:5050", server.r)
 }
