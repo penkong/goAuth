@@ -22,10 +22,10 @@ func main() {
 	}
 
 	// Open connection to database in this case Postgres13
-	_, err = sql.Open(config.DBDriver, config.DBSource)
-	if err != nil {
-		log.Fatal("db not connected!!!", err)
-	}
+	// _, err = sql.Open(config.DBDriver, config.DBSource)
+	// if err != nil {
+	// 	log.Fatal("db not connected!!!", err)
+	// }
 
 	// // Create new Store - DB logic
 
