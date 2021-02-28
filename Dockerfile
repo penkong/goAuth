@@ -11,6 +11,7 @@ WORKDIR $GOPATH/src/github.com/penkong/goAuth
 # We want to populate the module cache based on the go.{mod,sum} files.
 COPY go.mod .
 COPY go.sum .
+COPY config.env config.env
 COPY . .
 
 
