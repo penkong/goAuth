@@ -12,7 +12,6 @@ WORKDIR $GOPATH/src/github.com/penkong/goAuth
 COPY go.mod .
 COPY go.sum .
 COPY config.env config.env
-COPY . .
 
 
 # Fetch dependencies.
@@ -22,6 +21,8 @@ RUN go mod verify
 
 RUN go get -d -v ./...
 RUN go install -v ./...
+
+COPY . .
 
 # Unit tests
 # RUN CGO_ENABLED=0 go test -v
