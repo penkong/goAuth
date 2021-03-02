@@ -50,5 +50,5 @@ func (server *Server) setupRouter() {
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start() error {
 	handler := cors.Default().Handler(server.r)
-	return http.ListenAndServe("localhost:5000", handler)
+	return http.ListenAndServe(":5000", handler)
 }
