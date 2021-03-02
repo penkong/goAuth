@@ -7,6 +7,8 @@ import (
 	"github.com/penkong/goAuth/controllers"
 	token "github.com/penkong/goAuth/services"
 
+	"github.com/rs/cors"
+
 	// db "github.com/penkong/goAuth/db/sqlc"
 	// "github.com/techschool/simplebank/util"
 	"github.com/julienschmidt/httprouter"
@@ -47,5 +49,6 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start() error {
-	return http.ListenAndServe("localhost:5000", server.r)
+	handler := cors.Default().Handler(server.r)
+	return http.ListenAndServe("localhost:5000", handler)
 }
