@@ -3,7 +3,6 @@ postgres:
 
 
 it:
-	git pull
+	git pull && docker build -t penkong/westgoauth . && docker push penkong/westgoauth
 
-go:
-	docker build -t penkong/westgoauth . && docker push penkong/westgoauth
+	
