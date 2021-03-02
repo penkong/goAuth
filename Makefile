@@ -6,4 +6,4 @@ it:
 	git pull
 
 go:
-	docker build -t penkong/westgoauth .
+	docker build -t penkong/westgoauth . && docker push penkong/westgoauth
