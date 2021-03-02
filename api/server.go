@@ -41,9 +41,9 @@ func NewServer() (*Server, error) {
 func (server *Server) setupRouter() {
 	r := httprouter.New()
 	uc := controllers.NewAuthController()
-	r.POST("/api/v1/auth/login", uc.Login)
-	r.POST("/api/v1/auth/signup", uc.Signup)
-	r.GET("/api/v1/auth/logout", uc.Logout)
+	r.POST("/v1/auth/login", uc.Login)
+	r.POST("/v1/auth/signup", uc.Signup)
+	r.GET("/v1/auth/logout", uc.Logout)
 	server.r = r
 }
 
