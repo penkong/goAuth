@@ -19,10 +19,13 @@ COPY config.env config.env
 RUN go mod download
 RUN go mod verify
 
+
+COPY . .
+
+
 RUN go get -d -v ./...
 RUN go install -v ./...
 
-COPY . .
 
 # Unit tests
 # RUN CGO_ENABLED=0 go test -v
