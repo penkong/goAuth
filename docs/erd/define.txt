@@ -1,5 +1,0 @@
-make postgres
-make pgadmin
-docker exec -it pgadmin4 sh
-cat /etc/hosts
-use ip to connect

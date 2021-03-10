@@ -4,6 +4,9 @@ postgres:
 pgadmin:
 	docker run --name pgadmin4 -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=nazemi.works@gmail.com' -e 'PGADMIN_DEFAULT_PASSWORD=secret' --link pg13:pg13 -d dpage/pgadmin4
 
+migrateCreate:
+	migrate create -ext sql -dir db/migration -seq init_schema
+
 rmpgadmin:
 	docker stop pgadmin4 && docker rm pgadmin4 && docker stop pg13 && docker rm pg13
 commit:
