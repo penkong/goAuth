@@ -1,4 +1,4 @@
-CREATE TYPE eventfor AS ENUM (
+CREATE TYPE "eventsfor" AS ENUM (
   'login',
   'logout',
   'signup',
@@ -45,7 +45,7 @@ CREATE TABLE "users_info_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "user_id" bigint NOT NULL
 );
 
@@ -69,7 +69,7 @@ CREATE TABLE "team_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "team_id" bigint NOT NULL
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE "users_login_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "user_id" bigint NOT NULL,
   "user_ip" varchar(30) NOT NULL,
   "device_type" varchar(30) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE "user_change_password_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "user_id" bigint NOT NULL,
   "hashed_old_pass" varchar(200) NOT NULL
 );
@@ -126,7 +126,7 @@ CREATE TABLE "role_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "role_id" bigint NOT NULL
 );
 
@@ -146,7 +146,7 @@ CREATE TABLE "group_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "group_id" bigint NOT NULL
 );
 
@@ -166,7 +166,7 @@ CREATE TABLE "right_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "right_id" bigint NOT NULL
 );
 
@@ -186,7 +186,7 @@ CREATE TABLE "users_groups_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "user_group_id" bigint NOT NULL
 );
 
@@ -207,7 +207,7 @@ CREATE TABLE "group_right_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "group_right_id" bigint NOT NULL
 );
 
@@ -229,7 +229,7 @@ CREATE TABLE "users_groups_rights_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "rv" integer DEFAULT 0,
   "by_who" bigint NOT NULL,
-  "event_type" eventfor NOT NULL,
+  "event_type" eventsfor NOT NULL,
   "ugr_id" bigint NOT NULL
 );
 

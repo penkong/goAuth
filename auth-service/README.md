@@ -22,4 +22,8 @@ golang-migrate/migrate
 migrate version, help
 
 make migrate
+
 copy your sql raw to up
+write drop cases
+
+now go in db container
