@@ -17,4 +17,4 @@ DROP TABLE IF EXISTS "roles";
 DROP TABLE IF EXISTS "teams";
 DROP TABLE IF EXISTS "users_login";
 DROP TABLE IF EXISTS "users_info";
-DROP TYPE IF EXISTS eventfor;
+DROP TYPE IF EXISTS eventsfor;

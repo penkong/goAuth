@@ -27,3 +27,7 @@ copy your sql raw to up
 write drop cases
 
 now go in db container
+
+---
+
+generate crud code from sql
