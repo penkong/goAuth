@@ -31,6 +31,9 @@ migratedown:
 sqlc: 
 	sqlc generate
 
+test:
+	go test -v -cover ./...
+
 # if you need 
 delpg:
 	docker stop pg13 && docker rm pg13
