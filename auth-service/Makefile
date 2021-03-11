@@ -27,9 +27,9 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/authservice?sslmode=disable" -verbose down
 
-# if you need 
-removePgContainer:
-	docker stop pgadmin4 && docker rm pgadmin4 && docker stop pg13 && docker rm pg13
+
+sqlc: 
+	sqlc generate
 
 # if you need 
 delpg:
@@ -44,4 +44,4 @@ deladmin:
 it:
 	git pull && docker build -t penkong/authservice . && docker push penkong/authservice
 
-.PHONY: postgres createdb migrateup migratedown
+.PHONY: postgres createdb migrateup migratedown sqlc

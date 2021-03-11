@@ -31,3 +31,9 @@ now go in db container
 ---
 
 generate crud code from sql
+
+sqlc init -f sqlc.yaml
+make configuartion
+
+after that
+sqlc generate
