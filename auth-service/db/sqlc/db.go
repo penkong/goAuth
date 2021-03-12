@@ -22,25 +22,49 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createCredStmt, err = db.PrepareContext(ctx, createCred); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateCred: %w", err)
+	}
+	if q.createRoleStmt, err = db.PrepareContext(ctx, createRole); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateRole: %w", err)
+	}
+	if q.createTeamBasicStmt, err = db.PrepareContext(ctx, createTeamBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateTeamBasic: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
-	if q.createUserInfoStmt, err = db.PrepareContext(ctx, createUserInfo); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateUserInfo: %w", err)
+	if q.createUserBaseInfoStmt, err = db.PrepareContext(ctx, createUserBaseInfo); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserBaseInfo: %w", err)
 	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createCredStmt != nil {
+		if cerr := q.createCredStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createCredStmt: %w", cerr)
+		}
+	}
+	if q.createRoleStmt != nil {
+		if cerr := q.createRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createRoleStmt: %w", cerr)
+		}
+	}
+	if q.createTeamBasicStmt != nil {
+		if cerr := q.createTeamBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createTeamBasicStmt: %w", cerr)
+		}
+	}
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
-	if q.createUserInfoStmt != nil {
-		if cerr := q.createUserInfoStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createUserInfoStmt: %w", cerr)
+	if q.createUserBaseInfoStmt != nil {
+		if cerr := q.createUserBaseInfoStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserBaseInfoStmt: %w", cerr)
 		}
 	}
 	return err
@@ -80,17 +104,23 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                 DBTX
-	tx                 *sql.Tx
-	createUserStmt     *sql.Stmt
-	createUserInfoStmt *sql.Stmt
+	db                     DBTX
+	tx                     *sql.Tx
+	createCredStmt         *sql.Stmt
+	createRoleStmt         *sql.Stmt
+	createTeamBasicStmt    *sql.Stmt
+	createUserStmt         *sql.Stmt
+	createUserBaseInfoStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                 tx,
-		tx:                 tx,
-		createUserStmt:     q.createUserStmt,
-		createUserInfoStmt: q.createUserInfoStmt,
+		db:                     tx,
+		tx:                     tx,
+		createCredStmt:         q.createCredStmt,
+		createRoleStmt:         q.createRoleStmt,
+		createTeamBasicStmt:    q.createTeamBasicStmt,
+		createUserStmt:         q.createUserStmt,
+		createUserBaseInfoStmt: q.createUserBaseInfoStmt,
 	}
 }

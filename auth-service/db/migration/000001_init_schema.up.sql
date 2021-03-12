@@ -16,7 +16,6 @@ CREATE TABLE "users" (
 
 CREATE TABLE "users_info" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint,
   "first_name" varchar(50),
   "last_name" varchar(50),
   "dob" date NOT NULL,
@@ -42,7 +41,6 @@ CREATE TABLE "users_info" (
 
 CREATE TABLE "creds" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint,
   "hashed_pass" varchar(200) NOT NULL,
   "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -77,7 +75,6 @@ CREATE TABLE "teams" (
 
 CREATE TABLE "accounts" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint,
   "bank_name" varchar(100) NOT NULL,
   "account_number" varchar(100) UNIQUE NOT NULL,
   "deleted" boolean DEFAULT false,
@@ -125,20 +122,6 @@ SET
   NULL;
 
 ALTER TABLE
-  "users_info"
-ADD
-  CONSTRAINT "user_id_fk_to_users_info" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
-SET
-  NULL;
-
-ALTER TABLE
-  "creds"
-ADD
-  CONSTRAINT "user_id_fk_to_creds" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
-SET
-  NULL;
-
-ALTER TABLE
   "teams"
 ADD
   CONSTRAINT "ceo_id_fk_to_users" FOREIGN KEY ("ceo_id") REFERENCES "users" ("id") ON DELETE
@@ -163,13 +146,6 @@ ALTER TABLE
   "teams"
 ADD
   CONSTRAINT "tech_guy_id_fk_to_users" FOREIGN KEY ("tech_guy") REFERENCES "users" ("id") ON DELETE
-SET
-  NULL;
-
-ALTER TABLE
-  "accounts"
-ADD
-  CONSTRAINT "user_id_fk_to_accounts" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
 SET
   NULL;
 

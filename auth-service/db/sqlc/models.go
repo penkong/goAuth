@@ -4,220 +4,84 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 )
 
-type Eventsfor string
-
-const (
-	EventsforLogin    Eventsfor = "login"
-	EventsforLogout   Eventsfor = "logout"
-	EventsforSignup   Eventsfor = "signup"
-	EventsforUpdated  Eventsfor = "updated"
-	EventsforDeleted  Eventsfor = "deleted"
-	EventsforCreated  Eventsfor = "created"
-	EventsforRead     Eventsfor = "read"
-	EventsforStarted  Eventsfor = "started"
-	EventsforSuccess  Eventsfor = "success"
-	EventsforError    Eventsfor = "error"
-	EventsforFinished Eventsfor = "finished"
-)
-
-func (e *Eventsfor) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = Eventsfor(s)
-	case string:
-		*e = Eventsfor(s)
-	default:
-		return fmt.Errorf("unsupported scan type for Eventsfor: %T", src)
-	}
-	return nil
+type Account struct {
+	ID            int32        `db:"id" json:"id"`
+	BankName      string       `db:"bank_name" json:"bank_name"`
+	AccountNumber string       `db:"account_number" json:"account_number"`
+	Deleted       sql.NullBool `db:"deleted" json:"deleted"`
+	CreatedAt     time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt     sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
-type Group struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	CreatedBy int64         `db:"created_by" json:"created_by"`
-	GroupName string        `db:"group_name" json:"group_name"`
-}
-
-type GroupLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	GroupID   int64         `db:"group_id" json:"group_id"`
-}
-
-type GroupRightLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv           sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho        int64         `db:"by_who" json:"by_who"`
-	EventType    Eventsfor     `db:"event_type" json:"event_type"`
-	GroupRightID int64         `db:"group_right_id" json:"group_right_id"`
-}
-
-type GroupsRight struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	CreatedBy int64         `db:"created_by" json:"created_by"`
-	GroupID   int64         `db:"group_id" json:"group_id"`
-	RightID   int64         `db:"right_id" json:"right_id"`
-}
-
-type Right struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	RightName string        `db:"right_name" json:"right_name"`
-}
-
-type RightLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	RightID   int64         `db:"right_id" json:"right_id"`
+type Cred struct {
+	ID         int32        `db:"id" json:"id"`
+	HashedPass string       `db:"hashed_pass" json:"hashed_pass"`
+	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
+	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
 }
 
 type Role struct {
 	ID        int32        `db:"id" json:"id"`
+	RoleName  string       `db:"role_name" json:"role_name"`
+	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
 	CreatedAt time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
 	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	CreatedBy int64         `db:"created_by" json:"created_by"`
-	RoleName  string        `db:"role_name" json:"role_name"`
-}
-
-type RoleLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	RoleID    int64         `db:"role_id" json:"role_id"`
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
 type Team struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
+	ID        int32         `db:"id" json:"id"`
 	TeamName  string        `db:"team_name" json:"team_name"`
-	CreatedBy int64         `db:"created_by" json:"created_by"`
-	Manager   int64         `db:"manager" json:"manager"`
-	Hr        int64         `db:"hr" json:"hr"`
-	TechGuy   int64         `db:"tech_guy" json:"tech_guy"`
+	CeoID     sql.NullInt64 `db:"ceo_id" json:"ceo_id"`
+	Manager   sql.NullInt64 `db:"manager" json:"manager"`
+	Hr        sql.NullInt64 `db:"hr" json:"hr"`
+	TechGuy   sql.NullInt64 `db:"tech_guy" json:"tech_guy"`
 	Indsutry  string        `db:"indsutry" json:"indsutry"`
+	Deleted   sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt sql.NullTime  `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
-type TeamLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+type User struct {
+	ID       int32  `db:"id" json:"id"`
+	Email    string `db:"email" json:"email"`
+	Username string `db:"username" json:"username"`
+	// one to one
+	UserInfoID sql.NullInt64 `db:"user_info_id" json:"user_info_id"`
+	// one to one, cred contain deleted ones
+	CredID sql.NullInt64 `db:"cred_id" json:"cred_id"`
+	// many to one, role is parent
+	RoleID sql.NullInt64 `db:"role_id" json:"role_id"`
+	// many to one, team is parent
+	TeamID sql.NullInt64 `db:"team_id" json:"team_id"`
+	// one to many, user is parent
+	AccountID sql.NullInt64 `db:"account_id" json:"account_id"`
+	Deleted   sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt sql.NullTime  `db:"deleted_at" json:"deleted_at"`
 	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	TeamID    int64         `db:"team_id" json:"team_id"`
-}
-
-type UserChangePasswordLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv            sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho         int64         `db:"by_who" json:"by_who"`
-	EventType     Eventsfor     `db:"event_type" json:"event_type"`
-	UserID        int64         `db:"user_id" json:"user_id"`
-	HashedOldPass string        `db:"hashed_old_pass" json:"hashed_old_pass"`
-}
-
-type UsersGroup struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv      sql.NullInt32 `db:"rv" json:"rv"`
-	UserID  int64         `db:"user_id" json:"user_id"`
-	GroupID int64         `db:"group_id" json:"group_id"`
-}
-
-type UsersGroupsLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv          sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho       int64         `db:"by_who" json:"by_who"`
-	EventType   Eventsfor     `db:"event_type" json:"event_type"`
-	UserGroupID int64         `db:"user_group_id" json:"user_group_id"`
-}
-
-type UsersGroupsRight struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	CreatedBy int64         `db:"created_by" json:"created_by"`
-	UserID    int64         `db:"user_id" json:"user_id"`
-	GroupID   int64         `db:"group_id" json:"group_id"`
-	RightID   int64         `db:"right_id" json:"right_id"`
-}
-
-type UsersGroupsRightsLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	UgrID     int64         `db:"ugr_id" json:"ugr_id"`
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
 type UsersInfo struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv                 sql.NullInt32  `db:"rv" json:"rv"`
+	ID                 int32          `db:"id" json:"id"`
 	FirstName          sql.NullString `db:"first_name" json:"first_name"`
 	LastName           sql.NullString `db:"last_name" json:"last_name"`
+	Dob                time.Time      `db:"dob" json:"dob"`
 	CellPhone          sql.NullString `db:"cell_phone" json:"cell_phone"`
 	HomePhone          sql.NullString `db:"home_phone" json:"home_phone"`
 	WorkPhone          sql.NullString `db:"work_phone" json:"work_phone"`
@@ -231,43 +95,10 @@ type UsersInfo struct {
 	NationalCardPic    sql.NullString `db:"national_card_pic" json:"national_card_pic"`
 	PassportNumberType sql.NullString `db:"passport_number_type" json:"passport_number_type"`
 	PassportPic        sql.NullString `db:"passport_pic" json:"passport_pic"`
-}
-
-type UsersInfoLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	Deleted            sql.NullBool   `db:"deleted" json:"deleted"`
+	CreatedAt          time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt          sql.NullTime   `db:"updated_at" json:"updated_at"`
+	DeletedAt          sql.NullTime   `db:"deleted_at" json:"deleted_at"`
 	// use for handle hybrid concurrncy
-	Rv        sql.NullInt32 `db:"rv" json:"rv"`
-	ByWho     int64         `db:"by_who" json:"by_who"`
-	EventType Eventsfor     `db:"event_type" json:"event_type"`
-	UserID    int64         `db:"user_id" json:"user_id"`
-}
-
-type UsersLogin struct {
-	ID        int32        `db:"id" json:"id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
-	// use for handle hybrid concurrncy
-	Rv         sql.NullInt32 `db:"rv" json:"rv"`
-	Email      string        `db:"email" json:"email"`
-	Username   string        `db:"username" json:"username"`
-	HashedPass string        `db:"hashed_pass" json:"hashed_pass"`
-	UserInfoID int64         `db:"user_info_id" json:"user_info_id"`
-}
-
-type UsersLoginLog struct {
-	ID        int32     `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	// use for handle hybrid concurrncy
-	Rv         sql.NullInt32   `db:"rv" json:"rv"`
-	ByWho      int64           `db:"by_who" json:"by_who"`
-	EventType  Eventsfor       `db:"event_type" json:"event_type"`
-	UserID     int64           `db:"user_id" json:"user_id"`
-	UserIp     string          `db:"user_ip" json:"user_ip"`
-	DeviceType string          `db:"device_type" json:"device_type"`
-	OsType     string          `db:"os_type" json:"os_type"`
-	Lat        sql.NullFloat64 `db:"lat" json:"lat"`
-	Lng        sql.NullFloat64 `db:"lng" json:"lng"`
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }

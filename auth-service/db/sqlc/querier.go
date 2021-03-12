@@ -7,8 +7,11 @@ import (
 )
 
 type Querier interface {
-	CreateUser(ctx context.Context, arg CreateUserParams) (UsersLogin, error)
-	CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) (UsersInfo, error)
+	CreateCred(ctx context.Context, hashedPass string) (Cred, error)
+	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
+	CreateTeamBasic(ctx context.Context, arg CreateTeamBasicParams) (Team, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserBaseInfo(ctx context.Context, arg CreateUserBaseInfoParams) (UsersInfo, error)
 }
 
 var _ Querier = (*Queries)(nil)
