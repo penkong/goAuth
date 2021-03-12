@@ -15,7 +15,7 @@ createdb:
 removedb: 
 	docker exec -it pg13 dropdb authservice
 
-# step 4
+# step 4 , add more migirate create with new names for future
 migrateCreate:
 	migrate create -ext sql -dir db/migration -seq init_schema
 

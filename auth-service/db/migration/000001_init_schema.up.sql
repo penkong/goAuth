@@ -2,11 +2,11 @@ CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
   "email" varchar(40) UNIQUE NOT NULL,
   "username" varchar(30) UNIQUE NOT NULL,
-  "user_info_id" bigint NOT NULL REFERENCES users_info(id) on delete cascade,
-  "cred_id" bigint REFERENCES creds(id) on delete set null,
-  "role_id" bigint REFERENCES roles(id) on delete set null DEFAULT 1,
-  "team_id" bigint REFERENCES teams(id) on delete set null DEFAULT 1,
-  "account_id" bigint REFERENCES accounts(id) on delete set null,
+  "user_info_id" bigint,
+  "cred_id" bigint,
+  "role_id" bigint,
+  "team_id" bigint,
+  "account_id" bigint,
   "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
@@ -16,10 +16,10 @@ CREATE TABLE "users" (
 
 CREATE TABLE "users_info" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint NOT NULL REFERENCES users(id) on delete cascade,
+  "user_id" bigint,
   "first_name" varchar(50),
   "last_name" varchar(50),
-  "dob" datetime NOT NULL,
+  "dob" date NOT NULL,
   "cell_phone" varchar(24) UNIQUE,
   "home_phone" varchar(24),
   "work_phone" varchar(24),
@@ -42,7 +42,7 @@ CREATE TABLE "users_info" (
 
 CREATE TABLE "creds" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint NOT NULL REFERENCES users(id) on delete cascade,
+  "user_id" bigint,
   "hashed_pass" varchar(200) NOT NULL,
   "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -63,10 +63,10 @@ CREATE TABLE "roles" (
 CREATE TABLE "teams" (
   "id" SERIAL PRIMARY KEY,
   "team_name" varchar(100) UNIQUE NOT NULL,
-  "ceo" bigint REFERENCES users(id) on delete set null,
-  "manager" bigint REFERENCES users(id) on delete set null,
-  "hr" bigint REFERENCES users(id) on delete set null,
-  "tech_guy" bigint  REFERENCES users(id) on delete set null,
+  "ceo_id" bigint,
+  "manager" bigint,
+  "hr" bigint,
+  "tech_guy" bigint,
   "indsutry" varchar(50) NOT NULL,
   "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -77,7 +77,7 @@ CREATE TABLE "teams" (
 
 CREATE TABLE "accounts" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" bigint REFERENCES on delete cascade,
+  "user_id" bigint,
   "bank_name" varchar(100) NOT NULL,
   "account_number" varchar(100) UNIQUE NOT NULL,
   "deleted" boolean DEFAULT false,
@@ -86,6 +86,92 @@ CREATE TABLE "accounts" (
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0
 );
+
+ALTER TABLE
+  "users"
+ADD
+  CONSTRAINT "user_info_id_fk_to_users" FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "users"
+ADD
+  CONSTRAINT "cred_id_fk_to_users" FOREIGN KEY ("cred_id") REFERENCES "creds" ("id") ON DELETE
+SET
+  NULL;
+
+;
+
+ALTER TABLE
+  "users"
+ADD
+  CONSTRAINT "role_id_fk_to_users" FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "users"
+ADD
+  CONSTRAINT "team_id_fk_to_users" FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "users"
+ADD
+  CONSTRAINT "account_id_fk_to_users" FOREIGN KEY ("account_id") REFERENCES "accounts" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "users_info"
+ADD
+  CONSTRAINT "user_id_fk_to_users_info" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "creds"
+ADD
+  CONSTRAINT "user_id_fk_to_creds" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "teams"
+ADD
+  CONSTRAINT "ceo_id_fk_to_users" FOREIGN KEY ("ceo_id") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "teams"
+ADD
+  CONSTRAINT "manager_id_fk_to_users" FOREIGN KEY ("manager") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "teams"
+ADD
+  CONSTRAINT "hr_id_fk_to_users" FOREIGN KEY ("hr") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "teams"
+ADD
+  CONSTRAINT "tech_guy_id_fk_to_users" FOREIGN KEY ("tech_guy") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
+
+ALTER TABLE
+  "accounts"
+ADD
+  CONSTRAINT "user_id_fk_to_accounts" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE
+SET
+  NULL;
 
 CREATE INDEX ON "users" ("id");
 
