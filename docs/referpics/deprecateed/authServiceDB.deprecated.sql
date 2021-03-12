@@ -19,9 +19,6 @@ CREATE TABLE "users_info" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  "group_id" bigint,
-  "right_id" bigint,
-  "user_id" bigint UNIQUE NOT NULL,
   "first_name" varchar(50),
   "last_name" varchar(50),
   "cell_phone" varchar(24) UNIQUE,
@@ -36,8 +33,7 @@ CREATE TABLE "users_info" (
   "national_number" varchar(30),
   "national_card_pic" varchar(200) UNIQUE,
   "passport_number_type" varchar(50) UNIQUE,
-  "passport_pic" varchar(200) UNIQUE,
-  "team_id" bigint
+  "passport_pic" varchar(200) UNIQUE
 );
 
 CREATE TABLE "users_info_logs" (
@@ -83,7 +79,7 @@ CREATE TABLE "users_login" (
   "email" varchar(40) UNIQUE NOT NULL,
   "username" varchar(30) UNIQUE NOT NULL,
   "hashed_pass" varchar(200) NOT NULL,
-  "role_id" bigint NOT NULL
+  "user_info_id" bigint NOT NULL
 );
 
 CREATE TABLE "users_login_logs" (
@@ -233,14 +229,6 @@ CREATE TABLE "users_groups_rights_logs" (
   "ugr_id" bigint NOT NULL
 );
 
-ALTER TABLE "users_info" ADD FOREIGN KEY ("group_id") REFERENCES "groups" ("id");
-
-ALTER TABLE "users_info" ADD FOREIGN KEY ("right_id") REFERENCES "rights" ("id");
-
-ALTER TABLE "users_info" ADD FOREIGN KEY ("user_id") REFERENCES "users_login" ("id");
-
-ALTER TABLE "users_info" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
-
 ALTER TABLE "users_info_logs" ADD FOREIGN KEY ("by_who") REFERENCES "users_login" ("id");
 
 ALTER TABLE "users_info_logs" ADD FOREIGN KEY ("user_id") REFERENCES "users_login" ("id");
@@ -257,7 +245,7 @@ ALTER TABLE "team_logs" ADD FOREIGN KEY ("by_who") REFERENCES "users_login" ("id
 
 ALTER TABLE "team_logs" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
 
-ALTER TABLE "users_login" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "users_login" ADD FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id");
 
 ALTER TABLE "users_login_logs" ADD FOREIGN KEY ("by_who") REFERENCES "users_login" ("id");
 
@@ -390,3 +378,25 @@ COMMENT ON COLUMN "group_right_logs"."rv" IS 'use for handle hybrid concurrncy';
 COMMENT ON COLUMN "users_groups_rights"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "users_groups_rights_logs"."rv" IS 'use for handle hybrid concurrncy';
+
+
+-- DROP TABLE IF EXISTS "group_logs";
+-- DROP TABLE IF EXISTS "right_logs";
+-- DROP TABLE IF EXISTS "users_groups_rights_logs";
+-- DROP TABLE IF EXISTS "users_groups_logs";
+-- DROP TABLE IF EXISTS "group_right_logs";
+-- DROP TABLE IF EXISTS "users_info_logs";
+-- DROP TABLE IF EXISTS "team_logs";
+-- DROP TABLE IF EXISTS "user_change_password_logs";
+-- DROP TABLE IF EXISTS "role_logs";
+-- DROP TABLE IF EXISTS "users_login_logs";
+-- DROP TABLE IF EXISTS "users_groups_rights"; 
+-- DROP TABLE IF EXISTS "groups_rights";
+-- DROP TABLE IF EXISTS "users_groups";
+-- DROP TABLE IF EXISTS "rights";
+-- DROP TABLE IF EXISTS "groups";
+-- DROP TABLE IF EXISTS "roles";
+-- DROP TABLE IF EXISTS "teams";
+-- DROP TABLE IF EXISTS "users_login";
+-- DROP TABLE IF EXISTS "users_info";
+-- DROP TYPE IF EXISTS eventsfor;
