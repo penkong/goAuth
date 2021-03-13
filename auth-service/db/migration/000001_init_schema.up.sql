@@ -4,69 +4,57 @@
 --   CONSTRAINT "user_info_id_fk_to_users" FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "users"
 -- ADD
 --   CONSTRAINT "cred_id_fk_to_users" FOREIGN KEY ("cred_id") REFERENCES "creds" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ;
-
 -- ALTER TABLE
 --   "users"
 -- ADD
 --   CONSTRAINT "role_id_fk_to_users" FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "users"
 -- ADD
 --   CONSTRAINT "team_id_fk_to_users" FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "users"
 -- ADD
 --   CONSTRAINT "account_id_fk_to_users" FOREIGN KEY ("account_id") REFERENCES "accounts" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "teams"
 -- ADD
 --   CONSTRAINT "ceo_id_fk_to_users" FOREIGN KEY ("ceo_id") REFERENCES "users" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "teams"
 -- ADD
 --   CONSTRAINT "manager_id_fk_to_users" FOREIGN KEY ("manager") REFERENCES "users" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "teams"
 -- ADD
 --   CONSTRAINT "hr_id_fk_to_users" FOREIGN KEY ("hr") REFERENCES "users" ("id") ON DELETE
 -- SET
 --   NULL;
-
 -- ALTER TABLE
 --   "teams"
 -- ADD
 --   CONSTRAINT "tech_guy_id_fk_to_users" FOREIGN KEY ("tech_guy") REFERENCES "users" ("id") ON DELETE
 -- SET
 --   NULL;
-
-
-
-SET statement_timeout = "10s";
-
+SET
+  statement_timeout = "10s";
 
 CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
@@ -144,13 +132,11 @@ CREATE TABLE "roles" (
 --   teams (team_name, indsutry, rv)
 -- VALUES
 --   ($1, $2, $3) RETURNING *;
-
 -- -- name: CreateApps :one
 -- INSERT INTO
 --   apps (app_name, )
 -- VALUES
 --   () RETURNING *;
-
 -- -- name: CreateUser :one
 -- INSERT INTO
 --   users (
@@ -164,7 +150,6 @@ CREATE TABLE "roles" (
 --   )
 -- VALUES
 --   ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
-
 CREATE TABLE "teams" (
   "id" SERIAL PRIMARY KEY,
   "team_name" varchar(100) UNIQUE NOT NULL,
@@ -180,7 +165,9 @@ CREATE TABLE "teams" (
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0,
   UNIQUE(team_name, industry_id),
-  CHECK(COALESCE(leader, observer, hr, tech_guy) IS NOT NULL)
+  CHECK(
+    COALESCE(leader, observer, hr, tech_guy) IS NOT NULL
+  )
 );
 
 CREATE TABLE "accounts" (
@@ -208,7 +195,15 @@ CREATE TABLE "accounts_all" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0,
-  CHECK(COALESCE(account_main, account_2, account_3, account_4, account_5) IS NOT NULL)
+  CHECK(
+    COALESCE(
+      account_main,
+      account_2,
+      account_3,
+      account_4,
+      account_5
+    ) IS NOT NULL
+  )
 );
 
 CREATE TABLE "apps" (
@@ -228,7 +223,9 @@ CREATE TABLE "apps" (
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0,
   UNIQUE(app_name, industry_id),
-  CHECK(COALESCE(company_id, team_id, industry_id) IS NOT NULL),
+  CHECK(
+    COALESCE(company_id, team_id, industry_id) IS NOT NULL
+  ),
   CHECK(COALESCE(web, ios, android, desktop) IS NOT NULL)
 );
 
@@ -250,6 +247,7 @@ CREATE TABLE "companies" (
   "app_id" bigint,
   "team_id" bigint,
   "account_id" bigint,
+  "ceo_name" varchar(100),
   "ceo" bigint,
   "manager" bigint,
   "hr" bigint,
@@ -263,72 +261,167 @@ CREATE TABLE "companies" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0,
-  CHECK(COALESCE(team_id, app_id, industry_id) IS NOT NULL),
-  CHECK(COALESCE(ceo, manager, hr,cto) IS NOT NULL),
+  CHECK(
+    COALESCE(team_id, app_id, industry_id) IS NOT NULL
+  ),
+  -- CHECK(COALESCE(ceo, manager, hr,cto) IS NOT NULL),
   UNIQUE(ceo, region, country, address)
 );
 
-ALTER TABLE "users" ADD FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("cred_id") REFERENCES "creds" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("apps_id") REFERENCES "apps" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("apps_id") REFERENCES "apps" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE
+  "users"
+ADD
+  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
 
-ALTER TABLE "users_info" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE
+  "users_info"
+ADD
+  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
 
-ALTER TABLE "users_info" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE
+  "users_info"
+ADD
+  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("leader") REFERENCES "users" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("leader") REFERENCES "users" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("observer") REFERENCES "users" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("observer") REFERENCES "users" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("hr") REFERENCES "users" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("hr") REFERENCES "users" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("tech_guy") REFERENCES "users" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("tech_guy") REFERENCES "users" ("id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE
+  "teams"
+ADD
+  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
 
-ALTER TABLE "accounts_all" ADD FOREIGN KEY ("account_main") REFERENCES "accounts" ("id");
+ALTER TABLE
+  "accounts_all"
+ADD
+  FOREIGN KEY ("account_main") REFERENCES "accounts" ("id");
 
-ALTER TABLE "accounts_all" ADD FOREIGN KEY ("account_2") REFERENCES "accounts" ("id");
+ALTER TABLE
+  "accounts_all"
+ADD
+  FOREIGN KEY ("account_2") REFERENCES "accounts" ("id");
 
-ALTER TABLE "accounts_all" ADD FOREIGN KEY ("account_3") REFERENCES "accounts" ("id");
+ALTER TABLE
+  "accounts_all"
+ADD
+  FOREIGN KEY ("account_3") REFERENCES "accounts" ("id");
 
-ALTER TABLE "accounts_all" ADD FOREIGN KEY ("account_4") REFERENCES "accounts" ("id");
+ALTER TABLE
+  "accounts_all"
+ADD
+  FOREIGN KEY ("account_4") REFERENCES "accounts" ("id");
 
-ALTER TABLE "accounts_all" ADD FOREIGN KEY ("account_5") REFERENCES "accounts" ("id");
+ALTER TABLE
+  "accounts_all"
+ADD
+  FOREIGN KEY ("account_5") REFERENCES "accounts" ("id");
 
-ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE
+  "apps"
+ADD
+  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
 
-ALTER TABLE "apps" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE
+  "apps"
+ADD
+  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
 
-ALTER TABLE "apps" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE
+  "apps"
+ADD
+  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("app_id") REFERENCES "apps" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("ceo") REFERENCES "users" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("ceo") REFERENCES "users" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("manager") REFERENCES "users" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("manager") REFERENCES "users" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("hr") REFERENCES "users" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("hr") REFERENCES "users" ("id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("cto") REFERENCES "users" ("id");
+ALTER TABLE
+  "companies"
+ADD
+  FOREIGN KEY ("cto") REFERENCES "users" ("id");
 
 CREATE INDEX ON "users" ("id");
 
