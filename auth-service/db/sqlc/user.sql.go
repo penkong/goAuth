@@ -9,132 +9,16 @@ import (
 	"time"
 )
 
-const createCred = `-- name: CreateCred :one
-INSERT INTO
-  creds (hashed_pass)
-VALUES
-  ($1) RETURNING id, hashed_pass, deleted, created_at, updated_at, deleted_at
+const createCredFirst = `-- name: CreateCredFirst :one
+INSERT INTO creds (hashed_pass) VALUES ($1) RETURNING id, hashed_pass, deleted, created_at, updated_at, deleted_at, rv
 `
 
-func (q *Queries) CreateCred(ctx context.Context, hashedPass string) (Cred, error) {
-	row := q.queryRow(ctx, q.createCredStmt, createCred, hashedPass)
+func (q *Queries) CreateCredFirst(ctx context.Context, hashedPass string) (Cred, error) {
+	row := q.queryRow(ctx, q.createCredFirstStmt, createCredFirst, hashedPass)
 	var i Cred
 	err := row.Scan(
 		&i.ID,
 		&i.HashedPass,
-		&i.Deleted,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
-const createRole = `-- name: CreateRole :one
-INSERT INTO
-  roles (role_name, rv)
-VALUES
-  ($1, $2) RETURNING id, role_name, deleted, created_at, updated_at, deleted_at, rv
-`
-
-type CreateRoleParams struct {
-	RoleName string        `db:"role_name" json:"role_name"`
-	Rv       sql.NullInt32 `db:"rv" json:"rv"`
-}
-
-func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error) {
-	row := q.queryRow(ctx, q.createRoleStmt, createRole, arg.RoleName, arg.Rv)
-	var i Role
-	err := row.Scan(
-		&i.ID,
-		&i.RoleName,
-		&i.Deleted,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-		&i.Rv,
-	)
-	return i, err
-}
-
-const createTeamBasic = `-- name: CreateTeamBasic :one
-INSERT INTO
-  teams (team_name, indsutry, rv)
-VALUES
-  ($1, $2, $3) RETURNING id, team_name, ceo_id, manager, hr, tech_guy, indsutry, deleted, created_at, updated_at, deleted_at, rv
-`
-
-type CreateTeamBasicParams struct {
-	TeamName string        `db:"team_name" json:"team_name"`
-	Indsutry string        `db:"indsutry" json:"indsutry"`
-	Rv       sql.NullInt32 `db:"rv" json:"rv"`
-}
-
-func (q *Queries) CreateTeamBasic(ctx context.Context, arg CreateTeamBasicParams) (Team, error) {
-	row := q.queryRow(ctx, q.createTeamBasicStmt, createTeamBasic, arg.TeamName, arg.Indsutry, arg.Rv)
-	var i Team
-	err := row.Scan(
-		&i.ID,
-		&i.TeamName,
-		&i.CeoID,
-		&i.Manager,
-		&i.Hr,
-		&i.TechGuy,
-		&i.Indsutry,
-		&i.Deleted,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-		&i.Rv,
-	)
-	return i, err
-}
-
-const createUser = `-- name: CreateUser :one
-INSERT INTO
-  users (
-    email,
-    username,
-    user_info_id,
-    cred_id,
-    role_id,
-    team_id,
-    rv
-  )
-VALUES
-  ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, username, user_info_id, cred_id, role_id, team_id, account_id, deleted, created_at, updated_at, deleted_at, rv
-`
-
-type CreateUserParams struct {
-	Email      string        `db:"email" json:"email"`
-	Username   string        `db:"username" json:"username"`
-	UserInfoID sql.NullInt64 `db:"user_info_id" json:"user_info_id"`
-	CredID     sql.NullInt64 `db:"cred_id" json:"cred_id"`
-	RoleID     sql.NullInt64 `db:"role_id" json:"role_id"`
-	TeamID     sql.NullInt64 `db:"team_id" json:"team_id"`
-	Rv         sql.NullInt32 `db:"rv" json:"rv"`
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.queryRow(ctx, q.createUserStmt, createUser,
-		arg.Email,
-		arg.Username,
-		arg.UserInfoID,
-		arg.CredID,
-		arg.RoleID,
-		arg.TeamID,
-		arg.Rv,
-	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Username,
-		&i.UserInfoID,
-		&i.CredID,
-		&i.RoleID,
-		&i.TeamID,
-		&i.AccountID,
 		&i.Deleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -148,14 +32,14 @@ const createUserBaseInfo = `-- name: CreateUserBaseInfo :one
 INSERT INTO
   users_info (first_name, last_name, dob, rv)
 VALUES
-  ($1, $2, $3, $4) RETURNING id, first_name, last_name, dob, cell_phone, home_phone, work_phone, avatar, work_address, home_address, current_city, current_country, zip_code, national_number, national_card_pic, passport_number_type, passport_pic, deleted, created_at, updated_at, deleted_at, rv
+  ($1, $2, $3, $4) RETURNING id, first_name, last_name, dob, company_id, org_position, team_id, cell_phone, home_phone, work_phone, avatar, work_address, home_address, current_city, current_country, zip_code, national_number, national_card_pic, passport_number_type, passport_pic, deleted, created_at, updated_at, deleted_at, rv
 `
 
 type CreateUserBaseInfoParams struct {
-	FirstName sql.NullString `db:"first_name" json:"first_name"`
-	LastName  sql.NullString `db:"last_name" json:"last_name"`
-	Dob       time.Time      `db:"dob" json:"dob"`
-	Rv        sql.NullInt32  `db:"rv" json:"rv"`
+	FirstName string        `db:"first_name" json:"first_name"`
+	LastName  string        `db:"last_name" json:"last_name"`
+	Dob       time.Time     `db:"dob" json:"dob"`
+	Rv        sql.NullInt32 `db:"rv" json:"rv"`
 }
 
 func (q *Queries) CreateUserBaseInfo(ctx context.Context, arg CreateUserBaseInfoParams) (UsersInfo, error) {
@@ -171,6 +55,9 @@ func (q *Queries) CreateUserBaseInfo(ctx context.Context, arg CreateUserBaseInfo
 		&i.FirstName,
 		&i.LastName,
 		&i.Dob,
+		&i.CompanyID,
+		&i.OrgPosition,
+		&i.TeamID,
 		&i.CellPhone,
 		&i.HomePhone,
 		&i.WorkPhone,

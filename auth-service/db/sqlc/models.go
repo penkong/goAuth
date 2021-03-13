@@ -8,24 +8,97 @@ import (
 )
 
 type Account struct {
-	ID            int32        `db:"id" json:"id"`
-	BankName      string       `db:"bank_name" json:"bank_name"`
-	AccountNumber string       `db:"account_number" json:"account_number"`
-	Deleted       sql.NullBool `db:"deleted" json:"deleted"`
-	CreatedAt     time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt     sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt     sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	ID            int32          `db:"id" json:"id"`
+	BankName      string         `db:"bank_name" json:"bank_name"`
+	AccountNumber string         `db:"account_number" json:"account_number"`
+	AccountType   string         `db:"account_type" json:"account_type"`
+	Isbn          sql.NullString `db:"isbn" json:"isbn"`
+	Deleted       sql.NullBool   `db:"deleted" json:"deleted"`
+	CreatedAt     time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt     sql.NullTime   `db:"updated_at" json:"updated_at"`
+	DeletedAt     sql.NullTime   `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
+}
+
+type AccountsAll struct {
+	ID          int32         `db:"id" json:"id"`
+	AccountMain sql.NullInt64 `db:"account_main" json:"account_main"`
+	Account2    sql.NullInt64 `db:"account_2" json:"account_2"`
+	Account3    sql.NullInt64 `db:"account_3" json:"account_3"`
+	Account4    sql.NullInt64 `db:"account_4" json:"account_4"`
+	Account5    sql.NullInt64 `db:"account_5" json:"account_5"`
+	Deleted     sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt   time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt   sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt   sql.NullTime  `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
+}
+
+type App struct {
+	ID         int32         `db:"id" json:"id"`
+	AppName    string        `db:"app_name" json:"app_name"`
+	IndustryID sql.NullInt64 `db:"industry_id" json:"industry_id"`
+	CompanyID  sql.NullInt64 `db:"company_id" json:"company_id"`
+	TeamID     sql.NullInt64 `db:"team_id" json:"team_id"`
+	Web        sql.NullBool  `db:"web" json:"web"`
+	Ios        sql.NullBool  `db:"ios" json:"ios"`
+	Android    sql.NullBool  `db:"android" json:"android"`
+	Desktop    sql.NullBool  `db:"desktop" json:"desktop"`
+	Paid       sql.NullBool  `db:"paid" json:"paid"`
+	Deleted    sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt  time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt  sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt  sql.NullTime  `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
+}
+
+type Company struct {
+	ID          int32          `db:"id" json:"id"`
+	CompanyName string         `db:"company_name" json:"company_name"`
+	IndustryID  sql.NullInt64  `db:"industry_id" json:"industry_id"`
+	AppID       sql.NullInt64  `db:"app_id" json:"app_id"`
+	TeamID      sql.NullInt64  `db:"team_id" json:"team_id"`
+	AccountID   sql.NullInt64  `db:"account_id" json:"account_id"`
+	Ceo         sql.NullInt64  `db:"ceo" json:"ceo"`
+	Manager     sql.NullInt64  `db:"manager" json:"manager"`
+	Hr          sql.NullInt64  `db:"hr" json:"hr"`
+	Cto         sql.NullInt64  `db:"cto" json:"cto"`
+	Country     sql.NullString `db:"country" json:"country"`
+	// which? asia , euro, america ...
+	Region    sql.NullString `db:"region" json:"region"`
+	Address   sql.NullString `db:"address" json:"address"`
+	HowClean  string         `db:"how_clean" json:"how_clean"`
+	Deleted   sql.NullBool   `db:"deleted" json:"deleted"`
+	CreatedAt time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	DeletedAt sql.NullTime   `db:"deleted_at" json:"deleted_at"`
 	// use for handle hybrid concurrncy
 	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
 type Cred struct {
-	ID         int32        `db:"id" json:"id"`
-	HashedPass string       `db:"hashed_pass" json:"hashed_pass"`
-	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
-	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	ID         int32         `db:"id" json:"id"`
+	HashedPass string        `db:"hashed_pass" json:"hashed_pass"`
+	Deleted    sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt  time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt  sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt  sql.NullTime  `db:"deleted_at" json:"deleted_at"`
+	Rv         sql.NullInt32 `db:"rv" json:"rv"`
+}
+
+type Industry struct {
+	ID           int32        `db:"id" json:"id"`
+	IndustryName string       `db:"industry_name" json:"industry_name"`
+	HowClean     string       `db:"how_clean" json:"how_clean"`
+	Deleted      sql.NullBool `db:"deleted" json:"deleted"`
+	CreatedAt    time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt    sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt    sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	// use for handle hybrid concurrncy
+	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
 
 type Role struct {
@@ -40,17 +113,18 @@ type Role struct {
 }
 
 type Team struct {
-	ID        int32         `db:"id" json:"id"`
-	TeamName  string        `db:"team_name" json:"team_name"`
-	CeoID     sql.NullInt64 `db:"ceo_id" json:"ceo_id"`
-	Manager   sql.NullInt64 `db:"manager" json:"manager"`
-	Hr        sql.NullInt64 `db:"hr" json:"hr"`
-	TechGuy   sql.NullInt64 `db:"tech_guy" json:"tech_guy"`
-	Indsutry  string        `db:"indsutry" json:"indsutry"`
-	Deleted   sql.NullBool  `db:"deleted" json:"deleted"`
-	CreatedAt time.Time     `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime  `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime  `db:"deleted_at" json:"deleted_at"`
+	ID         int32         `db:"id" json:"id"`
+	TeamName   string        `db:"team_name" json:"team_name"`
+	AccountID  sql.NullInt64 `db:"account_id" json:"account_id"`
+	Leader     sql.NullInt64 `db:"leader" json:"leader"`
+	Observer   sql.NullInt64 `db:"observer" json:"observer"`
+	Hr         sql.NullInt64 `db:"hr" json:"hr"`
+	TechGuy    sql.NullInt64 `db:"tech_guy" json:"tech_guy"`
+	IndustryID int64         `db:"industry_id" json:"industry_id"`
+	Deleted    sql.NullBool  `db:"deleted" json:"deleted"`
+	CreatedAt  time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt  sql.NullTime  `db:"updated_at" json:"updated_at"`
+	DeletedAt  sql.NullTime  `db:"deleted_at" json:"deleted_at"`
 	// use for handle hybrid concurrncy
 	Rv sql.NullInt32 `db:"rv" json:"rv"`
 }
@@ -60,15 +134,17 @@ type User struct {
 	Email    string `db:"email" json:"email"`
 	Username string `db:"username" json:"username"`
 	// one to one
-	UserInfoID sql.NullInt64 `db:"user_info_id" json:"user_info_id"`
+	UserInfoID int64 `db:"user_info_id" json:"user_info_id"`
 	// one to one, cred contain deleted ones
-	CredID sql.NullInt64 `db:"cred_id" json:"cred_id"`
+	CredID int64 `db:"cred_id" json:"cred_id"`
 	// many to one, role is parent
 	RoleID sql.NullInt64 `db:"role_id" json:"role_id"`
 	// many to one, team is parent
 	TeamID sql.NullInt64 `db:"team_id" json:"team_id"`
 	// one to many, user is parent
 	AccountID sql.NullInt64 `db:"account_id" json:"account_id"`
+	AppsID    int64         `db:"apps_id" json:"apps_id"`
+	CompanyID sql.NullInt64 `db:"company_id" json:"company_id"`
 	Deleted   sql.NullBool  `db:"deleted" json:"deleted"`
 	CreatedAt time.Time     `db:"created_at" json:"created_at"`
 	UpdatedAt sql.NullTime  `db:"updated_at" json:"updated_at"`
@@ -79,9 +155,12 @@ type User struct {
 
 type UsersInfo struct {
 	ID                 int32          `db:"id" json:"id"`
-	FirstName          sql.NullString `db:"first_name" json:"first_name"`
-	LastName           sql.NullString `db:"last_name" json:"last_name"`
+	FirstName          string         `db:"first_name" json:"first_name"`
+	LastName           string         `db:"last_name" json:"last_name"`
 	Dob                time.Time      `db:"dob" json:"dob"`
+	CompanyID          sql.NullInt64  `db:"company_id" json:"company_id"`
+	OrgPosition        sql.NullString `db:"org_position" json:"org_position"`
+	TeamID             sql.NullInt64  `db:"team_id" json:"team_id"`
 	CellPhone          sql.NullString `db:"cell_phone" json:"cell_phone"`
 	HomePhone          sql.NullString `db:"home_phone" json:"home_phone"`
 	WorkPhone          sql.NullString `db:"work_phone" json:"work_phone"`

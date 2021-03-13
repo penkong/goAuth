@@ -7,10 +7,9 @@ import (
 )
 
 type Querier interface {
-	CreateCred(ctx context.Context, hashedPass string) (Cred, error)
+	CreateCredFirst(ctx context.Context, hashedPass string) (Cred, error)
+	CreateIndustry(ctx context.Context, arg CreateIndustryParams) (Industry, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
-	CreateTeamBasic(ctx context.Context, arg CreateTeamBasicParams) (Team, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateUserBaseInfo(ctx context.Context, arg CreateUserBaseInfoParams) (UsersInfo, error)
 }
 

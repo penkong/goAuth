@@ -89,8 +89,8 @@ CREATE TABLE "users" (
 
 CREATE TABLE "users_info" (
   "id" SERIAL PRIMARY KEY,
-  "first_name" varchar(50),
-  "last_name" varchar(50),
+  "first_name" varchar(50) NOT NULL,
+  "last_name" varchar(50) NOT NULL,
   "dob" date NOT NULL,
   "company_id" bigint,
   "org_position" varchar(50),
@@ -113,7 +113,8 @@ CREATE TABLE "users_info" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0,
-  CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
+  -- CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
+  UNIQUE(first_name, last_name, dob),
   UNIQUE(national_number, passport_number_type),
   UNIQUE(passport_number_type, current_country)
 );
@@ -137,6 +138,32 @@ CREATE TABLE "roles" (
   "deleted_at" timestamptz,
   "rv" integer DEFAULT 0
 );
+
+-- -- name: CreateTeamBasic :one 
+-- INSERT INTO
+--   teams (team_name, indsutry, rv)
+-- VALUES
+--   ($1, $2, $3) RETURNING *;
+
+-- -- name: CreateApps :one
+-- INSERT INTO
+--   apps (app_name, )
+-- VALUES
+--   () RETURNING *;
+
+-- -- name: CreateUser :one
+-- INSERT INTO
+--   users (
+--     email,
+--     username,
+--     user_info_id,
+--     cred_id,
+--     role_id,
+--     team_id,
+--     rv
+--   )
+-- VALUES
+--   ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 CREATE TABLE "teams" (
   "id" SERIAL PRIMARY KEY,
