@@ -1,5 +1,15 @@
--- name: CreateRole :one
-INSERT INTO
-  roles (role_name, rv)
-VALUES
-  ($ 1, $ 2) RETURNING *;
+-- name: GetUserWithEmail :one
+select
+  *
+from
+  users
+WHERE
+  email = ($ 1);
+
+-- name: GetUserWithUserName :one
+select
+  *
+from
+  users
+WHERE
+  username = ($ 1);

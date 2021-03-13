@@ -4,55 +4,6 @@
 --   CONSTRAINT "user_info_id_fk_to_users" FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id") ON DELETE
 -- SET
 --   NULL;
--- ALTER TABLE
---   "users"
--- ADD
---   CONSTRAINT "cred_id_fk_to_users" FOREIGN KEY ("cred_id") REFERENCES "creds" ("id") ON DELETE
--- SET
---   NULL;
--- ;
--- ALTER TABLE
---   "users"
--- ADD
---   CONSTRAINT "role_id_fk_to_users" FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "users"
--- ADD
---   CONSTRAINT "team_id_fk_to_users" FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "users"
--- ADD
---   CONSTRAINT "account_id_fk_to_users" FOREIGN KEY ("account_id") REFERENCES "accounts" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "teams"
--- ADD
---   CONSTRAINT "ceo_id_fk_to_users" FOREIGN KEY ("ceo_id") REFERENCES "users" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "teams"
--- ADD
---   CONSTRAINT "manager_id_fk_to_users" FOREIGN KEY ("manager") REFERENCES "users" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "teams"
--- ADD
---   CONSTRAINT "hr_id_fk_to_users" FOREIGN KEY ("hr") REFERENCES "users" ("id") ON DELETE
--- SET
---   NULL;
--- ALTER TABLE
---   "teams"
--- ADD
---   CONSTRAINT "tech_guy_id_fk_to_users" FOREIGN KEY ("tech_guy") REFERENCES "users" ("id") ON DELETE
--- SET
---   NULL;
 SET
   statement_timeout = "10s";
 
@@ -127,29 +78,6 @@ CREATE TABLE "roles" (
   "rv" integer DEFAULT 0
 );
 
--- -- name: CreateTeamBasic :one 
--- INSERT INTO
---   teams (team_name, indsutry, rv)
--- VALUES
---   ($1, $2, $3) RETURNING *;
--- -- name: CreateApps :one
--- INSERT INTO
---   apps (app_name, )
--- VALUES
---   () RETURNING *;
--- -- name: CreateUser :one
--- INSERT INTO
---   users (
---     email,
---     username,
---     user_info_id,
---     cred_id,
---     role_id,
---     team_id,
---     rv
---   )
--- VALUES
---   ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 CREATE TABLE "teams" (
   "id" SERIAL PRIMARY KEY,
   "team_name" varchar(100) UNIQUE NOT NULL,
@@ -264,7 +192,6 @@ CREATE TABLE "companies" (
   CHECK(
     COALESCE(team_id, app_id, industry_id) IS NOT NULL
   ),
-  -- CHECK(COALESCE(ceo, manager, hr,cto) IS NOT NULL),
   UNIQUE(ceo, region, country, address)
 );
 
