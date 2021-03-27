@@ -4,6 +4,23 @@
 --   CONSTRAINT "user_info_id_fk_to_users" FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id") ON DELETE
 -- SET
 --   NULL;
+-- -- name: GetUserWithEmail :one
+-- select
+--   *
+-- from
+--   users
+-- WHERE
+--   email = ($ 1);
+-- -- 1
+-- -- 2
+-- -- 3
+-- -- 4
+-- -- 5
+-- -- SELECT employee.first_name, employee.last_name, call.start_time, call.end_time, call_outcome.outcome_text
+-- -- FROM employee
+-- -- INNER JOIN call ON call.employee_id = employee.id
+-- -- INNER JOIN call_outcome ON call.call_outcome_id = call_outcome.id
+-- -- ORDER BY call.start_time ASC;
 SET
   statement_timeout = "10s";
 

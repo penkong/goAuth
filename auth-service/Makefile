@@ -44,6 +44,13 @@ deladmin:
 	docker stop pgadmin4 && docker rm pgadmin4
 
 
+mysql:
+	docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret -d mysql
+
+sqlworkbench:
+	docker run -d --name workbench -e PUID=1000 -e PGID=1000 -e TZ=Europe/London -p 3000:3000 --cap-add="IPC_LOCK" --restart unless-stopped --link mysql:mysql linuxserver/mysql-workbench
+  # -v /path/to/config:/config 
+
 it:
 	git pull && docker build -t penkong/authservice . && docker push penkong/authservice
 

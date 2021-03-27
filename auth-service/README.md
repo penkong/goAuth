@@ -37,3 +37,43 @@ make configuartion
 
 after that
 sqlc generate
+
+
+-----------
+
+select * from person where email like '%@google%' limit 20;
+select * from person where email like '_____@google%' limit 20;
+ilike case insensitive
+
+select make, model, min(price) from car group by make, model order by make;
+
+select id, make, model, price, round(price * .10,2) as discounted from car;
+
+select now() - interval '1 year';
+select extract(dow from now());
+
+
+alter table x add constraint unique_email_address unique(email)
+insert ... ON CONFLICT (ID) DO NOTHING/ DO UPDATE SET email=excluded.eamil  ;
+
+\copy (query) to 'addres/sth.csv' delimiter ',' csv header;
+
+select * from person_id_seq;
+restart sequence :
+alter sequence person_id_seq restart with 10;
+
+check available extensions :
+select * from pg_available_extensions;
+
+to install extensions;
+create extension if not exists 'uuid-ossp';
+
+to get list of available installed function by extensions
+\df
+
+---
+rather than simple join use this
+select * from table1 join car using(car_uid);
+------------
+
+show data_directory;
