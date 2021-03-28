@@ -1,39 +1,12 @@
-create extension if not exists "uuid-ossp";
-
 -- UNIQUE(email, username)
--- -- CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
--- UNIQUE(first_name, last_name, dob),
--- UNIQUE(national_number, passport_number_type),
--- UNIQUE(passport_number_type, current_country)
-
--- UNIQUE(team_name, industry_id),
+-- CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
 -- CHECK(
 --   COALESCE(leader, observer, hr, tech_guy) IS NOT NULL
 -- )
--- CHECK(
---   COALESCE(
---     account_main,
---     account_2,
---     account_3,
---     account_4,
---     account_5
---   ) IS NOT NULL
--- )
--- UNIQUE(app_name, industry_id),
--- CHECK(
---   COALESCE(company_id, team_id, industry_id) IS NOT NULL
--- ),
--- CHECK(COALESCE(web, ios, android, desktop) IS NOT NULL)
 
+create extension if not exists "uuid-ossp";
 
--- CHECK(
---   COALESCE(team_id, app_id, industry_id) IS NOT NULL
--- ),
--- UNIQUE(ceo, region, country, address)
-  -- "user_info_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-
-SET
-  statement_timeout = "10s";
+SET statement_timeout = "10s";
 
 CREATE TABLE "users" (
   "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -67,8 +40,8 @@ CREATE TABLE "users_info" (
   "work_address" varchar(200),
   "home_address" varchar(200),
   "current_city" varchar(75),
-  "current_country" varchar(75),
   "born_country" varchar(75),
+  "current_country" varchar(75),
   "zip_code" varchar(75),
   "national_number" varchar(30) UNIQUE,
   "national_card_pic" varchar(200) UNIQUE,
@@ -143,16 +116,13 @@ CREATE TABLE "positions" (
 CREATE TABLE "teams" (
   "team_id" BIGSERIAL PRIMARY KEY,
   "team" varchar(100) NOT NULL,
-  "company_id" bigint,
   "industry_id" bigint,
-  "app_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("company_id", "industry_id")
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "bank_account" (
@@ -182,7 +152,8 @@ CREATE TABLE "bank_account_all" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("account_1", "account_2", "account_3", "account_4", "account_5") IS NOT NULL)
 );
 
 CREATE TABLE "apps" (
@@ -194,18 +165,16 @@ CREATE TABLE "apps" (
   "mobile" boolean,
   "ios" boolean,
   "android" boolean,
+  "pwa" boolean,
   "paid" boolean DEFAULT false,
-  "team_id" bigint,
-  "industry_id" bigint NOT NULL,
-  "company_id" bigint,
+  "industry_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
   CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL),
-  CHECK(COALESCE("team_id", "company_id") IS NOT NULL)
+  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
 );
 
 CREATE TABLE "industries" (
@@ -223,6 +192,7 @@ CREATE TABLE "industries" (
 CREATE TABLE "companies" (
   "company_id" SERIAL PRIMARY KEY,
   "company" varchar(100) NOT NULL,
+  "bio" varchar(2000) NOT NULL,
   "country" varchar(50) NOT NULL,
   "region" varchar(50) NOT NULL,
   "address" varchar(400) NOT NULL,
@@ -239,6 +209,42 @@ CREATE TABLE "companies" (
   "rv" integer DEFAULT 0,
   CHECK("created_at" < "updated_at"),
   CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
+);
+
+CREATE TABLE "teams_companies" (
+  "teams_company_id" BIGSERIAL PRIMARY KEY,
+  "team_id" bigint NOT NULL,
+  "company_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "teams_apps" (
+  "team_app_id" BIGSERIAL PRIMARY KEY,
+  "team_id" bigint NOT NULL,
+  "app_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "companies_apps" (
+  "company_app_id" BIGSERIAL PRIMARY KEY,
+  "company_id" bigint NOT NULL,
+  "app_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
@@ -265,11 +271,7 @@ ALTER TABLE "business_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_i
 
 ALTER TABLE "business_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
 
-ALTER TABLE "teams" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
-
 ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
-
-ALTER TABLE "teams" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
 ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_1") REFERENCES "bank_account" ("bank_account_id");
 
@@ -281,11 +283,7 @@ ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_4") REFERENCES "bank_ac
 
 ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_5") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE "apps" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
-
 ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
-
-ALTER TABLE "apps" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
 ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
@@ -296,6 +294,18 @@ ALTER TABLE "companies" ADD FOREIGN KEY ("ceo") REFERENCES "users" ("user_id");
 ALTER TABLE "companies" ADD FOREIGN KEY ("manager") REFERENCES "users" ("user_id");
 
 ALTER TABLE "companies" ADD FOREIGN KEY ("hr") REFERENCES "users" ("user_id");
+
+ALTER TABLE "teams_companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "teams_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
+ALTER TABLE "teams_apps" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "teams_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+
+ALTER TABLE "companies_apps" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
+ALTER TABLE "companies_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
 CREATE INDEX ON "users" ("email");
 
@@ -313,7 +323,7 @@ CREATE INDEX ON "positions" ("position");
 
 CREATE INDEX ON "teams" ("team_id");
 
-CREATE INDEX ON "teams" ("team", "company_id", "industry_id");
+CREATE INDEX ON "teams" ("team", "industry_id");
 
 CREATE INDEX ON "bank_account" ("account_number");
 
@@ -360,3 +370,9 @@ COMMENT ON COLUMN "industries"."rv" IS 'use for handle hybrid concurrncy';
 COMMENT ON COLUMN "companies"."region" IS 'which continental?';
 
 COMMENT ON COLUMN "companies"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "teams_companies"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "teams_apps"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "companies_apps"."rv" IS 'use for handle hybrid concurrncy';
