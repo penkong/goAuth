@@ -38,6 +38,7 @@ CREATE TABLE "users_info" (
   "work_address" varchar(200),
   "home_address" varchar(200),
   "current_city" varchar(75),
+  "born_country" varchar(75),
   "current_country" varchar(75),
   "zip_code" varchar(75),
   "national_number" varchar(30) UNIQUE,
@@ -127,6 +128,41 @@ CREATE TABLE "business_logs" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "industries" (
+  "industry_id" BIGSERIAL PRIMARY KEY,
+  "industry" varchar(100) UNIQUE NOT NULL,
+  "how_clean" int NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "statuses" (
+  "status_id" BIGSERIAL PRIMARY KEY,
+  "status" varchar(100),
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "roles" (
+  "role_id" BIGSERIAL PRIMARY KEY,
+  "role" varchar(30) UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+
 CREATE TABLE "apps" (
   "app_id" BIGSERIAL PRIMARY KEY,
   "app" varchar(100) UNIQUE NOT NULL,
@@ -182,27 +218,6 @@ CREATE TABLE "companies" (
   CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
 );
 
-CREATE TABLE "statuses" (
-  "status_id" BIGSERIAL PRIMARY KEY,
-  "status" varchar(100),
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "roles" (
-  "role_id" BIGSERIAL PRIMARY KEY,
-  "role" varchar(30) UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
 
 CREATE TABLE "positions" (
   "position_id" BIGSERIAL PRIMARY KEY,
@@ -215,17 +230,7 @@ CREATE TABLE "positions" (
   CHECK("created_at" < "updated_at")
 );
 
-CREATE TABLE "industries" (
-  "industry_id" BIGSERIAL PRIMARY KEY,
-  "industry" varchar(100) UNIQUE NOT NULL,
-  "how_clean" int NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
+
 
 CREATE TABLE "users_roles" (
   "user_role_id" BIGSERIAL PRIMARY KEY,

@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS "user_logs" CASCADE;
 DROP TABLE IF EXISTS "business_logs" CASCADE;
 
 -- info tables + admin creations
+DROP TABLE IF EXISTS "industries" CASCADE;
 DROP TABLE IF EXISTS "apps" CASCADE;
 DROP TABLE IF EXISTS "teams" CASCADE;
 DROP TABLE IF EXISTS "companies" CASCADE;
@@ -17,7 +18,6 @@ DROP TABLE IF EXISTS "companies" CASCADE;
 DROP TABLE IF EXISTS "statuses" CASCADE;
 DROP TABLE IF EXISTS "roles" CASCADE;
 DROP TABLE IF EXISTS "positions" CASCADE;
-DROP TABLE IF EXISTS "industries" CASCADE;
 
 -- conjunction tables
 DROP TABLE IF EXISTS "users_roles" CASCADE;
