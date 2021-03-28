@@ -76,7 +76,20 @@ rather than simple join use this
 select * from table1 join car using(car_uid);
 ------------
 
+// check (created_at < updated_at)
+// created_at timestamp with time zone default current_timestamp
+// check(coalesce(phone , email) is not null)
+// lat REAL check(lat is null or (lat >= -90 and lat <= 90)
+
 show data_directory;
 -- show data_directory;
 -- select oid, datname from pg_database;
 select * from pg_class;
+
+for uuid 
+select * from pg_available_extensions;
+create extension if not exists "uuid-ossp";
+
+\df
+
+id uuid DEFAULT uuid_generate_v4 ()

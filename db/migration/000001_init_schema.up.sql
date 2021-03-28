@@ -1,57 +1,65 @@
--- ALTER TABLE
---   "users"
--- ADD
---   CONSTRAINT "user_info_id_fk_to_users" FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id") ON DELETE
--- SET
---   NULL;
--- -- name: GetUserWithEmail :one
--- select
---   *
--- from
---   users
--- WHERE
---   email = ($ 1);
--- -- 1
--- -- 2
--- -- 3
--- -- 4
--- -- 5
--- -- SELECT employee.first_name, employee.last_name, call.start_time, call.end_time, call_outcome.outcome_text
--- -- FROM employee
--- -- INNER JOIN call ON call.employee_id = employee.id
--- -- INNER JOIN call_outcome ON call.call_outcome_id = call_outcome.id
--- -- ORDER BY call.start_time ASC;
+create extension if not exists "uuid-ossp";
+
+-- UNIQUE(email, username)
+-- -- CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
+-- UNIQUE(first_name, last_name, dob),
+-- UNIQUE(national_number, passport_number_type),
+-- UNIQUE(passport_number_type, current_country)
+
+-- UNIQUE(team_name, industry_id),
+-- CHECK(
+--   COALESCE(leader, observer, hr, tech_guy) IS NOT NULL
+-- )
+-- CHECK(
+--   COALESCE(
+--     account_main,
+--     account_2,
+--     account_3,
+--     account_4,
+--     account_5
+--   ) IS NOT NULL
+-- )
+-- UNIQUE(app_name, industry_id),
+-- CHECK(
+--   COALESCE(company_id, team_id, industry_id) IS NOT NULL
+-- ),
+-- CHECK(COALESCE(web, ios, android, desktop) IS NOT NULL)
+
+
+-- CHECK(
+--   COALESCE(team_id, app_id, industry_id) IS NOT NULL
+-- ),
+-- UNIQUE(ceo, region, country, address)
+  -- "user_info_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+
 SET
   statement_timeout = "10s";
 
 CREATE TABLE "users" (
-  "id" SERIAL PRIMARY KEY,
+  "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   "email" varchar(40) UNIQUE NOT NULL,
   "username" varchar(30) UNIQUE NOT NULL,
-  "user_info_id" bigint UNIQUE NOT NULL,
-  "cred_id" bigint UNIQUE NOT NULL,
+  "cred_id" UUID UNIQUE NOT NULL,
+  "account_id" UUID,
+  "user_info_id" UUID UNIQUE NOT NULL,
   "role_id" bigint DEFAULT 1,
   "team_id" bigint DEFAULT 1,
-  "account_id" bigint,
+  "position_id" bigint,
   "apps_id" bigint NOT NULL,
   "company_id" bigint,
-  "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  UNIQUE(email, username)
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "users_info" (
-  "id" SERIAL PRIMARY KEY,
-  "first_name" varchar(50) NOT NULL,
-  "last_name" varchar(50) NOT NULL,
+  "user_info_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "first_name" varchar(50),
+  "last_name" varchar(50),
   "dob" date NOT NULL,
-  "company_id" bigint,
-  "org_position" varchar(50),
-  "team_id" bigint,
-  "cell_phone" varchar(24) UNIQUE,
+  "cell_phone" varchar(24),
   "home_phone" varchar(24),
   "work_phone" varchar(24),
   "avatar" varchar(200),
@@ -64,375 +72,273 @@ CREATE TABLE "users_info" (
   "national_card_pic" varchar(200) UNIQUE,
   "passport_number_type" varchar(50) UNIQUE,
   "passport_pic" varchar(200) UNIQUE,
-  "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  -- CHECK(COALESCE(cell_phone, home_phone, work_phone) IS NOT NULL),
-  UNIQUE(first_name, last_name, dob),
-  UNIQUE(national_number, passport_number_type),
-  UNIQUE(passport_number_type, current_country)
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE "user_logs" (
+  "user_logs_id" BIGSERIAL PRIMARY KEY,
+  "event" varchar(50) NOT NULL,
+  "device" varchar(50) NOT NULL,
+  "os" varchar(50) NOT NULL,
+  "ip" varchar(50) NOT NULL,
+  "agent" varchar(50) NOT NULL,
+  "app_id" bigint NOT NULL,
+  "creator" UUID NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "business_logs" (
+  "business_log_id" BIGSERIAL PRIMARY KEY,
+  "event" varchar(50) NOT NULL,
+  "device" varchar(50) NOT NULL,
+  "os" varchar(50) NOT NULL,
+  "ip" varchar(50) NOT NULL,
+  "agent" varchar(50) NOT NULL,
+  "app_id" bigint NOT NULL,
+  "creator" UUID,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "creds" (
-  "id" SERIAL PRIMARY KEY,
-  "hashed_pass" varchar(200) NOT NULL UNIQUE,
-  "deleted" boolean DEFAULT false,
+  "cred_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "hashed_pass" varchar(200) NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "roles" (
-  "id" SERIAL PRIMARY KEY,
-  "role_name" varchar(30) UNIQUE NOT NULL,
-  "deleted" boolean DEFAULT false,
+  "role_id" BIGSERIAL PRIMARY KEY,
+  "role" varchar(30) UNIQUE NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE "positions" (
+  "position_id" BIGSERIAL PRIMARY KEY,
+  "position" varchar(50) UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "teams" (
-  "id" SERIAL PRIMARY KEY,
-  "team_name" varchar(100) UNIQUE NOT NULL,
-  "account_id" bigint,
-  "leader" bigint,
-  "observer" bigint,
-  "hr" bigint,
-  "tech_guy" bigint,
-  "industry_id" bigint NOT NULL,
-  "deleted" boolean DEFAULT false,
+  "team_id" BIGSERIAL PRIMARY KEY,
+  "team" varchar(100) NOT NULL,
+  "company_id" bigint,
+  "industry_id" bigint,
+  "app_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  UNIQUE(team_name, industry_id),
-  CHECK(
-    COALESCE(leader, observer, hr, tech_guy) IS NOT NULL
-  )
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
 );
 
-CREATE TABLE "accounts" (
-  "id" SERIAL PRIMARY KEY,
-  "bank_name" varchar(100) NOT NULL,
+CREATE TABLE "bank_account" (
+  "bank_account_id" BIGSERIAL PRIMARY KEY,
+  "bank" varchar(100) NOT NULL,
   "account_number" varchar(100) NOT NULL,
   "account_type" varchar(50) NOT NULL,
-  "isbn" varchar(100) UNIQUE,
-  "deleted" boolean DEFAULT false,
+  "isbn" varchar(100) UNIQUE NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0
 );
 
-CREATE TABLE "accounts_all" (
-  "id" SERIAL PRIMARY KEY,
-  "account_main" bigint,
+CREATE TABLE "bank_account_all" (
+  "bank_account_all_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "account_1" bigint,
   "account_2" bigint,
   "account_3" bigint,
   "account_4" bigint,
   "account_5" bigint,
-  "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  CHECK(
-    COALESCE(
-      account_main,
-      account_2,
-      account_3,
-      account_4,
-      account_5
-    ) IS NOT NULL
-  )
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0
 );
 
 CREATE TABLE "apps" (
-  "id" SERIAL PRIMARY KEY,
-  "app_name" varchar(100) UNIQUE NOT NULL,
-  "industry_id" bigint,
-  "company_id" bigint,
-  "team_id" bigint,
+  "app_id" BIGSERIAL PRIMARY KEY,
+  "app" varchar(100) UNIQUE NOT NULL,
+  "app_base_os" varchar(30) NOT NULL,
+  "desktop" boolean,
   "web" boolean,
+  "mobile" boolean,
   "ios" boolean,
   "android" boolean,
-  "desktop" boolean,
   "paid" boolean DEFAULT false,
-  "deleted" boolean DEFAULT false,
+  "team_id" bigint,
+  "industry_id" bigint,
+  "company_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  UNIQUE(app_name, industry_id),
-  CHECK(
-    COALESCE(company_id, team_id, industry_id) IS NOT NULL
-  ),
-  CHECK(COALESCE(web, ios, android, desktop) IS NOT NULL)
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0
 );
 
 CREATE TABLE "industries" (
-  "id" SERIAL PRIMARY KEY,
-  "industry_name" varchar(100) UNIQUE NOT NULL,
-  "how_clean" varchar(50) NOT NULL,
-  "deleted" boolean DEFAULT false,
+  "industry_id" BIGSERIAL PRIMARY KEY,
+  "industry" varchar(100) UNIQUE NOT NULL,
+  "how_clean" int NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0
 );
 
 CREATE TABLE "companies" (
-  "id" SERIAL PRIMARY KEY,
-  "company_name" varchar(100) NOT NULL,
+  "company_id" SERIAL PRIMARY KEY,
+  "company" varchar(100) NOT NULL,
+  "country" varchar(50) NOT NULL,
+  "region" varchar(50) NOT NULL,
+  "address" varchar(400) NOT NULL,
+  "how_clean" int NOT NULL,
   "industry_id" bigint,
-  "app_id" bigint,
-  "team_id" bigint,
-  "account_id" bigint,
-  "ceo_name" varchar(100),
+  "account_id" UUID,
   "ceo" bigint,
   "manager" bigint,
   "hr" bigint,
-  "cto" bigint,
-  "country" varchar(50),
-  "region" varchar(50),
-  "address" varchar(400),
-  "how_clean" varchar(50) NOT NULL,
-  "deleted" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
-  "rv" integer DEFAULT 0,
-  CHECK(
-    COALESCE(team_id, app_id, industry_id) IS NOT NULL
-  ),
-  UNIQUE(ceo, region, country, address)
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0
 );
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("cred_id") REFERENCES "creds" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("account_id") REFERENCES "bank_account_all" ("bank_account_all_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("user_info_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("apps_id") REFERENCES "apps" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
 
-ALTER TABLE
-  "users"
-ADD
-  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("apps_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE
-  "users_info"
-ADD
-  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
-ALTER TABLE
-  "users_info"
-ADD
-  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("leader") REFERENCES "users" ("id");
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("observer") REFERENCES "users" ("id");
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("hr") REFERENCES "users" ("id");
+ALTER TABLE "teams" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("tech_guy") REFERENCES "users" ("id");
+ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
-ALTER TABLE
-  "teams"
-ADD
-  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE "teams" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE
-  "accounts_all"
-ADD
-  FOREIGN KEY ("account_main") REFERENCES "accounts" ("id");
+ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_1") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE
-  "accounts_all"
-ADD
-  FOREIGN KEY ("account_2") REFERENCES "accounts" ("id");
+ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_2") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE
-  "accounts_all"
-ADD
-  FOREIGN KEY ("account_3") REFERENCES "accounts" ("id");
+ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_3") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE
-  "accounts_all"
-ADD
-  FOREIGN KEY ("account_4") REFERENCES "accounts" ("id");
+ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_4") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE
-  "accounts_all"
-ADD
-  FOREIGN KEY ("account_5") REFERENCES "accounts" ("id");
+ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_5") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE
-  "apps"
-ADD
-  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE "apps" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
 
-ALTER TABLE
-  "apps"
-ADD
-  FOREIGN KEY ("company_id") REFERENCES "companies" ("id");
+ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
-ALTER TABLE
-  "apps"
-ADD
-  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE "apps" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("industry_id") REFERENCES "industries" ("id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("app_id") REFERENCES "apps" ("id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("account_id") REFERENCES "bank_account_all" ("bank_account_all_id");
 
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("team_id") REFERENCES "teams" ("id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("ceo") REFERENCES "users" ("user_id");
 
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("account_id") REFERENCES "accounts_all" ("id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("manager") REFERENCES "users" ("user_id");
 
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("ceo") REFERENCES "users" ("id");
-
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("manager") REFERENCES "users" ("id");
-
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("hr") REFERENCES "users" ("id");
-
-ALTER TABLE
-  "companies"
-ADD
-  FOREIGN KEY ("cto") REFERENCES "users" ("id");
-
-CREATE INDEX ON "users" ("id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("hr") REFERENCES "users" ("user_id");
 
 CREATE INDEX ON "users" ("email");
 
 CREATE INDEX ON "users" ("username");
 
-CREATE INDEX ON "users_info" ("id");
+CREATE INDEX ON "users_info" ("first_name", "last_name");
 
-CREATE INDEX ON "users_info" ("cell_phone", "first_name", "last_name");
+CREATE INDEX ON "user_logs" ("event");
 
-CREATE INDEX ON "creds" ("id");
+CREATE INDEX ON "business_logs" ("event");
 
-CREATE INDEX ON "roles" ("id");
+CREATE INDEX ON "roles" ("role");
 
-CREATE INDEX ON "roles" ("role_name");
+CREATE INDEX ON "positions" ("position");
 
-CREATE INDEX ON "teams" ("id");
+CREATE INDEX ON "teams" ("team_id");
 
-CREATE INDEX ON "teams" ("team_name", "industry_id");
+CREATE INDEX ON "teams" ("team", "company_id", "industry_id");
 
-CREATE INDEX ON "accounts" ("id");
+CREATE INDEX ON "bank_account" ("account_number");
 
-CREATE INDEX ON "accounts" ("account_number");
+CREATE INDEX ON "bank_account" ("isbn");
 
-CREATE INDEX ON "accounts_all" ("id");
+CREATE INDEX ON "apps" ("app");
 
-CREATE INDEX ON "accounts_all" ("account_main");
+CREATE INDEX ON "industries" ("industry");
 
-CREATE INDEX ON "apps" ("id");
-
-CREATE INDEX ON "apps" ("app_name");
-
-CREATE INDEX ON "industries" ("id");
-
-CREATE INDEX ON "industries" ("industry_name");
-
-CREATE INDEX ON "companies" ("id");
-
-CREATE INDEX ON "companies" ("company_name");
-
-COMMENT ON COLUMN "users"."user_info_id" IS 'one to one';
+CREATE INDEX ON "companies" ("company");
 
 COMMENT ON COLUMN "users"."cred_id" IS 'one to one, cred contain deleted ones';
+
+COMMENT ON COLUMN "users"."account_id" IS 'one to many, user is parent';
+
+COMMENT ON COLUMN "users"."user_info_id" IS 'one to one';
 
 COMMENT ON COLUMN "users"."role_id" IS 'many to one, role is parent';
 
 COMMENT ON COLUMN "users"."team_id" IS 'many to one, team is parent';
 
-COMMENT ON COLUMN "users"."account_id" IS 'one to many, user is parent';
-
 COMMENT ON COLUMN "users"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "users_info"."rv" IS 'use for handle hybrid concurrncy';
 
+COMMENT ON COLUMN "business_logs"."creator" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "creds"."rv" IS 'use for handle hybrid concurrncy';
+
 COMMENT ON COLUMN "roles"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "positions"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "teams"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "accounts"."rv" IS 'use for handle hybrid concurrncy';
+COMMENT ON COLUMN "bank_account"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "accounts_all"."rv" IS 'use for handle hybrid concurrncy';
+COMMENT ON COLUMN "bank_account_all"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "apps"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "industries"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "companies"."region" IS 'which? asia , euro, america ...';
+COMMENT ON COLUMN "companies"."region" IS 'which continental?';
 
 COMMENT ON COLUMN "companies"."rv" IS 'use for handle hybrid concurrncy';
