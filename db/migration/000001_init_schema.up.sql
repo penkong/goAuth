@@ -40,7 +40,7 @@ CREATE TABLE "users" (
   "email" varchar(40) UNIQUE NOT NULL,
   "username" varchar(30) UNIQUE NOT NULL,
   "cred_id" UUID UNIQUE NOT NULL,
-  "account_id" UUID,
+  "account_id" UUID UNIQUE,
   "user_info_id" UUID UNIQUE NOT NULL,
   "role_id" bigint DEFAULT 1,
   "team_id" bigint DEFAULT 1,
@@ -51,7 +51,8 @@ CREATE TABLE "users" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "users_info" (
@@ -67,6 +68,7 @@ CREATE TABLE "users_info" (
   "home_address" varchar(200),
   "current_city" varchar(75),
   "current_country" varchar(75),
+  "born_country" varchar(75),
   "zip_code" varchar(75),
   "national_number" varchar(30) UNIQUE,
   "national_card_pic" varchar(200) UNIQUE,
@@ -76,7 +78,9 @@ CREATE TABLE "users_info" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("first_name", "last_name", "dob", "national_number", "born_country")
 );
 
 CREATE TABLE "user_logs" (
@@ -110,7 +114,8 @@ CREATE TABLE "creds" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "roles" (
@@ -120,7 +125,8 @@ CREATE TABLE "roles" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "positions" (
@@ -130,7 +136,8 @@ CREATE TABLE "positions" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "teams" (
@@ -143,7 +150,9 @@ CREATE TABLE "teams" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("company_id", "industry_id")
 );
 
 CREATE TABLE "bank_account" (
@@ -156,21 +165,24 @@ CREATE TABLE "bank_account" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("bank", "account_number")
 );
 
 CREATE TABLE "bank_account_all" (
   "bank_account_all_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "account_1" bigint,
-  "account_2" bigint,
-  "account_3" bigint,
-  "account_4" bigint,
-  "account_5" bigint,
+  "account_1" bigint UNIQUE,
+  "account_2" bigint UNIQUE,
+  "account_3" bigint UNIQUE,
+  "account_4" bigint UNIQUE,
+  "account_5" bigint UNIQUE,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "apps" (
@@ -184,13 +196,16 @@ CREATE TABLE "apps" (
   "android" boolean,
   "paid" boolean DEFAULT false,
   "team_id" bigint,
-  "industry_id" bigint,
+  "industry_id" bigint NOT NULL,
   "company_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL),
+  CHECK(COALESCE("team_id", "company_id") IS NOT NULL)
 );
 
 CREATE TABLE "industries" (
@@ -201,7 +216,8 @@ CREATE TABLE "industries" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "companies" (
@@ -213,14 +229,16 @@ CREATE TABLE "companies" (
   "how_clean" int NOT NULL,
   "industry_id" bigint,
   "account_id" UUID,
-  "ceo" bigint,
-  "manager" bigint,
-  "hr" bigint,
+  "ceo" UUID,
+  "manager" UUID,
+  "hr" UUID,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
 );
 
 ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
