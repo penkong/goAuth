@@ -77,3 +77,6 @@ select * from table1 join car using(car_uid);
 ------------
 
 show data_directory;
+-- show data_directory;
+-- select oid, datname from pg_database;
+select * from pg_class;
