@@ -12,14 +12,10 @@ CREATE TABLE "users" (
   "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   "email" varchar(40) UNIQUE NOT NULL,
   "username" varchar(30) UNIQUE NOT NULL,
+  "status_id" bigint NOT NULL DEFAULT 1,
   "cred_id" UUID UNIQUE NOT NULL,
-  "account_id" UUID UNIQUE,
+  "bank_account_all_id" UUID,
   "user_info_id" UUID UNIQUE NOT NULL,
-  "role_id" bigint DEFAULT 1,
-  "team_id" bigint DEFAULT 1,
-  "position_id" bigint,
-  "apps_id" bigint NOT NULL,
-  "company_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
@@ -37,10 +33,11 @@ CREATE TABLE "users_info" (
   "home_phone" varchar(24),
   "work_phone" varchar(24),
   "avatar" varchar(200),
+  "banner" varchar(200),
+  "bio" varchar(2000),
   "work_address" varchar(200),
   "home_address" varchar(200),
   "current_city" varchar(75),
-  "born_country" varchar(75),
   "current_country" varchar(75),
   "zip_code" varchar(75),
   "national_number" varchar(30) UNIQUE,
@@ -56,6 +53,48 @@ CREATE TABLE "users_info" (
   UNIQUE("first_name", "last_name", "dob", "national_number", "born_country")
 );
 
+CREATE TABLE "creds" (
+  "cred_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "hashed_pass" varchar(200) NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "bank_account" (
+  "bank_account_id" BIGSERIAL PRIMARY KEY,
+  "bank" varchar(100) NOT NULL,
+  "account_number" varchar(100) NOT NULL,
+  "account_type" varchar(50) NOT NULL,
+  "isbn" varchar(100) UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("bank", "account_number")
+);
+
+CREATE TABLE "bank_account_all" (
+  "bank_account_all_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "account_1" bigint,
+  "account_2" bigint,
+  "account_3" bigint,
+  "account_4" bigint,
+  "account_5" bigint,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("account_1", "account_2", "account_3", "account_4", "account_5") IS NOT NULL)
+);
+
 CREATE TABLE "user_logs" (
   "user_logs_id" BIGSERIAL PRIMARY KEY,
   "event" varchar(50) NOT NULL,
@@ -63,6 +102,10 @@ CREATE TABLE "user_logs" (
   "os" varchar(50) NOT NULL,
   "ip" varchar(50) NOT NULL,
   "agent" varchar(50) NOT NULL,
+  "position_id" bigint NOT NULL,
+  "company_id" bigint NOT NULL,
+  "role_id" bigint NOT NULL,
+  "team_id" bigint NOT NULL,
   "app_id" bigint NOT NULL,
   "creator" UUID NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
@@ -75,14 +118,73 @@ CREATE TABLE "business_logs" (
   "os" varchar(50) NOT NULL,
   "ip" varchar(50) NOT NULL,
   "agent" varchar(50) NOT NULL,
+  "position_id" bigint,
+  "company_id" bigint,
+  "role_id" bigint NOT NULL,
+  "team_id" bigint,
   "app_id" bigint NOT NULL,
   "creator" UUID,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "creds" (
-  "cred_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "hashed_pass" varchar(200) NOT NULL,
+CREATE TABLE "apps" (
+  "app_id" BIGSERIAL PRIMARY KEY,
+  "app" varchar(100) UNIQUE NOT NULL,
+  "app_base_os" varchar(30) NOT NULL,
+  "desktop" boolean,
+  "web" boolean,
+  "mobile" boolean,
+  "ios" boolean,
+  "android" boolean,
+  "pwa" boolean,
+  "paid" boolean DEFAULT false,
+  "industry_id" bigint,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
+);
+
+CREATE TABLE "teams" (
+  "team_id" BIGSERIAL PRIMARY KEY,
+  "team" varchar(100) NOT NULL,
+  "industry_id" bigint,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "companies" (
+  "company_id" SERIAL PRIMARY KEY,
+  "company" varchar(100) NOT NULL,
+  "bio" varchar(2000) NOT NULL,
+  "country" varchar(50) NOT NULL,
+  "region" varchar(50) NOT NULL,
+  "ceo" varchar(100),
+  "manager" varchar(100),
+  "hr" varchar(100),
+  "address" varchar(400) NOT NULL,
+  "how_clean" int NOT NULL,
+  "industry_id" bigint,
+  "bank_account_all_id" UUID,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
+);
+
+CREATE TABLE "statuses" (
+  "status_id" BIGSERIAL PRIMARY KEY,
+  "status" varchar(100),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
@@ -113,70 +215,6 @@ CREATE TABLE "positions" (
   CHECK("created_at" < "updated_at")
 );
 
-CREATE TABLE "teams" (
-  "team_id" BIGSERIAL PRIMARY KEY,
-  "team" varchar(100) NOT NULL,
-  "industry_id" bigint,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "bank_account" (
-  "bank_account_id" BIGSERIAL PRIMARY KEY,
-  "bank" varchar(100) NOT NULL,
-  "account_number" varchar(100) NOT NULL,
-  "account_type" varchar(50) NOT NULL,
-  "isbn" varchar(100) UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("bank", "account_number")
-);
-
-CREATE TABLE "bank_account_all" (
-  "bank_account_all_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "account_1" bigint UNIQUE,
-  "account_2" bigint UNIQUE,
-  "account_3" bigint UNIQUE,
-  "account_4" bigint UNIQUE,
-  "account_5" bigint UNIQUE,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("account_1", "account_2", "account_3", "account_4", "account_5") IS NOT NULL)
-);
-
-CREATE TABLE "apps" (
-  "app_id" BIGSERIAL PRIMARY KEY,
-  "app" varchar(100) UNIQUE NOT NULL,
-  "app_base_os" varchar(30) NOT NULL,
-  "desktop" boolean,
-  "web" boolean,
-  "mobile" boolean,
-  "ios" boolean,
-  "android" boolean,
-  "pwa" boolean,
-  "paid" boolean DEFAULT false,
-  "industry_id" bigint,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
-);
-
 CREATE TABLE "industries" (
   "industry_id" BIGSERIAL PRIMARY KEY,
   "industry" varchar(100) UNIQUE NOT NULL,
@@ -189,27 +227,66 @@ CREATE TABLE "industries" (
   CHECK("created_at" < "updated_at")
 );
 
-CREATE TABLE "companies" (
-  "company_id" SERIAL PRIMARY KEY,
-  "company" varchar(100) NOT NULL,
-  "bio" varchar(2000) NOT NULL,
-  "country" varchar(50) NOT NULL,
-  "region" varchar(50) NOT NULL,
-  "address" varchar(400) NOT NULL,
-  "how_clean" int NOT NULL,
-  "industry_id" bigint,
-  "account_id" UUID,
-  "ceo" UUID,
-  "manager" UUID,
-  "hr" UUID,
+CREATE TABLE "users_roles" (
+  "user_role_id" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "role_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
+
+CREATE TABLE "users_teams" (
+  "user_team" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "team_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "users_apps" (
+  "user_app_id" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "app_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "users_positions" (
+  "user_position_id" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "position_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "users_companies" (
+  "user_company_id" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "company_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
 
 CREATE TABLE "teams_companies" (
   "teams_company_id" BIGSERIAL PRIMARY KEY,
@@ -247,29 +324,14 @@ CREATE TABLE "companies_apps" (
   CHECK("created_at" < "updated_at")
 );
 
+
+ALTER TABLE "users" ADD FOREIGN KEY ("status_id") REFERENCES "statuses" ("status_id");
+
 ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("account_id") REFERENCES "bank_account_all" ("bank_account_all_id");
+ALTER TABLE "users" ADD FOREIGN KEY ("bank_account_all_id") REFERENCES "bank_account_all" ("bank_account_all_id");
 
 ALTER TABLE "users" ADD FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("user_info_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("apps_id") REFERENCES "apps" ("app_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
-
-ALTER TABLE "user_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
-
-ALTER TABLE "user_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
-
-ALTER TABLE "business_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
-
-ALTER TABLE "business_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
 
 ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
@@ -287,13 +349,7 @@ ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("ind
 
 ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("account_id") REFERENCES "bank_account_all" ("bank_account_all_id");
-
-ALTER TABLE "companies" ADD FOREIGN KEY ("ceo") REFERENCES "users" ("user_id");
-
-ALTER TABLE "companies" ADD FOREIGN KEY ("manager") REFERENCES "users" ("user_id");
-
-ALTER TABLE "companies" ADD FOREIGN KEY ("hr") REFERENCES "users" ("user_id");
+ALTER TABLE "companies" ADD FOREIGN KEY ("bank_account_all_id") REFERENCES "bank_account_all" ("bank_account_all_id");
 
 ALTER TABLE "teams_companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
 
@@ -307,19 +363,51 @@ ALTER TABLE "companies_apps" ADD FOREIGN KEY ("company_id") REFERENCES "companie
 
 ALTER TABLE "companies_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
+ALTER TABLE "users_roles" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users_roles" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
+
+ALTER TABLE "users_teams" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users_teams" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "users_apps" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+
+ALTER TABLE "users_positions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users_positions" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
+
+ALTER TABLE "users_companies" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+
+ALTER TABLE "user_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
+
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
+
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
+
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
+
 CREATE INDEX ON "users" ("email");
 
 CREATE INDEX ON "users" ("username");
-
-CREATE INDEX ON "users_info" ("first_name", "last_name");
-
-CREATE INDEX ON "user_logs" ("event");
-
-CREATE INDEX ON "business_logs" ("event");
-
-CREATE INDEX ON "roles" ("role");
-
-CREATE INDEX ON "positions" ("position");
 
 CREATE INDEX ON "teams" ("team_id");
 
@@ -331,25 +419,23 @@ CREATE INDEX ON "bank_account" ("isbn");
 
 CREATE INDEX ON "apps" ("app");
 
-CREATE INDEX ON "industries" ("industry");
-
 CREATE INDEX ON "companies" ("company");
+
+CREATE INDEX ON "user_logs" ("event");
+
+CREATE INDEX ON "business_logs" ("event");
+
+COMMENT ON COLUMN "statuses"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "users"."cred_id" IS 'one to one, cred contain deleted ones';
 
-COMMENT ON COLUMN "users"."account_id" IS 'one to many, user is parent';
+COMMENT ON COLUMN "users"."bank_account_all_id" IS 'one to many, user is parent';
 
 COMMENT ON COLUMN "users"."user_info_id" IS 'one to one';
-
-COMMENT ON COLUMN "users"."role_id" IS 'many to one, role is parent';
-
-COMMENT ON COLUMN "users"."team_id" IS 'many to one, team is parent';
 
 COMMENT ON COLUMN "users"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "users_info"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "business_logs"."creator" IS 'maybe is it a guest';
 
 COMMENT ON COLUMN "creds"."rv" IS 'use for handle hybrid concurrncy';
 
@@ -376,3 +462,23 @@ COMMENT ON COLUMN "teams_companies"."rv" IS 'use for handle hybrid concurrncy';
 COMMENT ON COLUMN "teams_apps"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "companies_apps"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_roles"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_teams"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_apps"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_positions"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_companies"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "business_logs"."position_id" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "business_logs"."role_id" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "business_logs"."team_id" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "business_logs"."app_id" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "business_logs"."creator" IS 'maybe is it a guest';
