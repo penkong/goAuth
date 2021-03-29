@@ -19,7 +19,7 @@ CREATE TABLE "industries" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "statuses" (
@@ -30,7 +30,7 @@ CREATE TABLE "statuses" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "roles" (
@@ -41,7 +41,7 @@ CREATE TABLE "roles" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "positions" (
@@ -53,8 +53,8 @@ CREATE TABLE "positions" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("department", "position")
+  CHECK(created_at < updated_at),
+  UNIQUE(department, position)
 );
 
 CREATE TABLE "apps" (
@@ -74,8 +74,8 @@ CREATE TABLE "apps" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
+  CHECK(created_at < updated_at),
+  CHECK(COALESCE(desktop, web, mobile) IS NOT NULL)
 );
 
 CREATE TABLE "teams" (
@@ -87,7 +87,7 @@ CREATE TABLE "teams" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "companies" (
@@ -108,8 +108,8 @@ CREATE TABLE "companies" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
+  CHECK(created_at < updated_at),
+  CHECK(COALESCE(ceo, manager, hr) IS NOT NULL)
 );
 
 -- ----------------
@@ -123,8 +123,8 @@ CREATE TABLE "teams_companies" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("team_id", "company_id")
+  CHECK(created_at < updated_at),
+  UNIQUE(team_id,company_id)
 );
 
 CREATE TABLE "teams_apps" (
@@ -136,8 +136,8 @@ CREATE TABLE "teams_apps" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("team_id", "app_id")
+  CHECK(created_at < updated_at),
+  UNIQUE(team_id,app_id)
 );
 
 CREATE TABLE "companies_apps" (
@@ -149,8 +149,8 @@ CREATE TABLE "companies_apps" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("company_id", "app_id")
+  CHECK(created_at < updated_at),
+  UNIQUE(company_id,app_id)
 );
 
 -- --------------------------------
@@ -163,7 +163,7 @@ CREATE TABLE "creds" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "users_info" (
@@ -193,10 +193,10 @@ CREATE TABLE "users_info" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("first_name", "last_name", "dob", "born_country", "living_country"),
-  UNIQUE("current_country", "national_number"),
-  UNIQUE("current_country", "passport_number_type")
+  CHECK(created_at < updated_at),
+  UNIQUE(first_name, last_name, dob, born_country, living_country),
+  UNIQUE(current_country, national_number),
+  UNIQUE(current_country, passport_number_type)
 );
 
 CREATE TABLE "users" (
@@ -212,7 +212,7 @@ CREATE TABLE "users" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "bank_account" (
@@ -226,8 +226,8 @@ CREATE TABLE "bank_account" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  UNIQUE("bank", "account_number")
+  CHECK(created_at < updated_at),
+  UNIQUE(bank, account_number)
 );
 
 CREATE TABLE "bank_account_all" (
@@ -242,8 +242,8 @@ CREATE TABLE "bank_account_all" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("account_1", "account_2", "account_3", "account_4", "account_5") IS NOT NULL)
+  CHECK(created_at < updated_at),
+  CHECK(COALESCE(account_1, account_2, account_3, account_4, account_5) IS NOT NULL)
 );
 
 -- --------------
@@ -257,7 +257,7 @@ CREATE TABLE "users_roles" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "users_teams" (
@@ -269,7 +269,7 @@ CREATE TABLE "users_teams" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "users_apps" (
@@ -281,7 +281,7 @@ CREATE TABLE "users_apps" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "users_positions" (
@@ -293,7 +293,7 @@ CREATE TABLE "users_positions" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 CREATE TABLE "users_companies" (
@@ -305,7 +305,7 @@ CREATE TABLE "users_companies" (
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  CHECK(created_at < updated_at)
 );
 
 -- -----------------
