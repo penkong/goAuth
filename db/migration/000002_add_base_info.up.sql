@@ -11,7 +11,6 @@ VALUES
 
 INSERT INTO statuses(status)
 VALUES 
-  ('awaiting'),
   ('temp'),
   ('activated'),
   ('freezed'),
@@ -206,15 +205,8 @@ VALUES
 
 -- 
 
-INSERT INTO teams_companies(team_id, company_id)
-VALUES(1,1);
-
---
-
-INSERT INTO teams_apps(team_id, app_id)
-VALUES (1, 1),(1, 2),(1, 3);
-
---
-
-INSERT INTO companies_apps(company_id, app_id)
-VALUES (1,1),(1,2),(1,3);
+INSERT INTO teams_apps_companies(team_id, app_id, company_id) 
+VALUES 
+  (1,1,1),
+  (1,2,1),
+  (1,3,1);

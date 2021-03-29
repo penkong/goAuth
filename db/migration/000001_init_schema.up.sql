@@ -114,43 +114,18 @@ CREATE TABLE "companies" (
 
 -- ----------------
 
-CREATE TABLE "teams_companies" (
-  "teams_company_id" BIGSERIAL PRIMARY KEY,
-  "team_id" bigint NOT NULL,
-  "company_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK(created_at < updated_at),
-  UNIQUE(team_id,company_id)
-);
-
-CREATE TABLE "teams_apps" (
+CREATE TABLE "teams_apps_companies" (
   "team_app_id" BIGSERIAL PRIMARY KEY,
-  "team_id" bigint NOT NULL,
-  "app_id" bigint NOT NULL,
+  "team_id" bigint,
+  "app_id" bigint,
+  "company_id" bigint,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer DEFAULT 0,
   CHECK(created_at < updated_at),
-  UNIQUE(team_id,app_id)
-);
-
-CREATE TABLE "companies_apps" (
-  "company_app_id" BIGSERIAL PRIMARY KEY,
-  "company_id" bigint NOT NULL,
-  "app_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK(created_at < updated_at),
-  UNIQUE(company_id,app_id)
+  UNIQUE(team_id, app_id, company_id)
 );
 
 -- --------------------------------
@@ -248,64 +223,38 @@ CREATE TABLE "bank_account_all" (
 
 -- --------------
 
-CREATE TABLE "users_roles" (
+
+CREATE TABLE "users_roles_apps_companies" (
   "user_role_id" BIGSERIAL PRIMARY KEY,
   "user_id" UUID NOT NULL,
-  "role_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK(created_at < updated_at)
-);
-
-CREATE TABLE "users_teams" (
-  "user_team" BIGSERIAL PRIMARY KEY,
-  "user_id" UUID NOT NULL,
-  "team_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK(created_at < updated_at)
-);
-
-CREATE TABLE "users_apps" (
-  "user_app_id" BIGSERIAL PRIMARY KEY,
-  "user_id" UUID NOT NULL,
+  "role_id" bigint NOT NULL DEFAULT 3,
   "app_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK(created_at < updated_at)
-);
-
-CREATE TABLE "users_positions" (
-  "user_position_id" BIGSERIAL PRIMARY KEY,
-  "user_id" UUID NOT NULL,
-  "position_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK(created_at < updated_at)
-);
-
-CREATE TABLE "users_companies" (
-  "user_company_id" BIGSERIAL PRIMARY KEY,
-  "user_id" UUID NOT NULL,
   "company_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
-  CHECK(created_at < updated_at)
+  CHECK(created_at < updated_at),
+  UNIQUE(user_id, role_id, app_id, company_id)
+);
+
+CREATE TABLE "users_roles_apps_positions_teams_companies" (
+  "user_team" BIGSERIAL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "role_id" bigint NOT NULL DEFAULT 3,
+  "app_id" bigint NOT NULL,
+  "position_id" bigint NOT NULL,
+  "team_id" bigint NOT NULL,
+  "company_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK(created_at < updated_at),
+  UNIQUE(user_id, role_id, app_id, position_id, team_id, company_id)
+
 );
 
 -- -----------------
@@ -344,6 +293,20 @@ CREATE TABLE "business_logs" (
 
 -- -----------------
 
+ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
+
+ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
+
+ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
+
+ALTER TABLE "companies" ADD FOREIGN KEY ("bank_account_all_id") REFERENCES "bank_account_all" ("bank_account_all_id");
+
+ALTER TABLE "teams_apps_companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+
+ALTER TABLE "teams_apps_companies" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+
+ALTER TABLE "teams_apps_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
 ALTER TABLE "users" ADD FOREIGN KEY ("status_id") REFERENCES "statuses" ("status_id");
 
 ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
@@ -351,8 +314,6 @@ ALTER TABLE "users" ADD FOREIGN KEY ("cred_id") REFERENCES "creds" ("cred_id");
 ALTER TABLE "users" ADD FOREIGN KEY ("bank_account_all_id") REFERENCES "bank_account_all" ("bank_account_all_id");
 
 ALTER TABLE "users" ADD FOREIGN KEY ("user_info_id") REFERENCES "users_info" ("user_info_id");
-
-ALTER TABLE "teams" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
 
 ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_1") REFERENCES "bank_account" ("bank_account_id");
 
@@ -364,43 +325,25 @@ ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_4") REFERENCES "bank_ac
 
 ALTER TABLE "bank_account_all" ADD FOREIGN KEY ("account_5") REFERENCES "bank_account" ("bank_account_id");
 
-ALTER TABLE "apps" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
+ALTER TABLE "users_roles_apps_companies" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("industry_id") REFERENCES "industries" ("industry_id");
+ALTER TABLE "users_roles_apps_companies" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
 
-ALTER TABLE "companies" ADD FOREIGN KEY ("bank_account_all_id") REFERENCES "bank_account_all" ("bank_account_all_id");
+ALTER TABLE "users_roles_apps_companies" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE "teams_companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+ALTER TABLE "users_roles_apps_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
-ALTER TABLE "teams_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "teams_apps" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
 
-ALTER TABLE "teams_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
 
-ALTER TABLE "companies_apps" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
 
-ALTER TABLE "companies_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
 
-ALTER TABLE "users_roles" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users_roles" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
-
-ALTER TABLE "users_teams" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users_teams" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
-
-ALTER TABLE "users_apps" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users_apps" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_id");
-
-ALTER TABLE "users_positions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users_positions" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
-
-ALTER TABLE "users_companies" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+ALTER TABLE "users_roles_apps_positions_teams_companies" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
 
 ALTER TABLE "user_logs" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
 
@@ -416,6 +359,8 @@ ALTER TABLE "user_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id
 
 ALTER TABLE "business_logs" ADD FOREIGN KEY ("position_id") REFERENCES "positions" ("position_id");
 
+ALTER TABLE "business_logs" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("company_id");
+
 ALTER TABLE "business_logs" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("role_id");
 
 ALTER TABLE "business_logs" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("team_id");
@@ -424,27 +369,47 @@ ALTER TABLE "business_logs" ADD FOREIGN KEY ("app_id") REFERENCES "apps" ("app_i
 
 ALTER TABLE "business_logs" ADD FOREIGN KEY ("creator") REFERENCES "users" ("user_id");
 
-CREATE INDEX ON "users" ("email");
-
-CREATE INDEX ON "users" ("username");
+CREATE INDEX ON "apps" ("app");
 
 CREATE INDEX ON "teams" ("team_id");
 
 CREATE INDEX ON "teams" ("team", "industry_id");
 
+CREATE INDEX ON "companies" ("company");
+
+CREATE INDEX ON "users" ("email");
+
+CREATE INDEX ON "users" ("username");
+
 CREATE INDEX ON "bank_account" ("account_number");
 
 CREATE INDEX ON "bank_account" ("isbn");
-
-CREATE INDEX ON "apps" ("app");
-
-CREATE INDEX ON "companies" ("company");
 
 CREATE INDEX ON "user_logs" ("event");
 
 CREATE INDEX ON "business_logs" ("event");
 
+COMMENT ON COLUMN "industries"."rv" IS 'use for handle hybrid concurrncy';
+
 COMMENT ON COLUMN "statuses"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "roles"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "positions"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "apps"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "teams"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "companies"."region" IS 'which continental?';
+
+COMMENT ON COLUMN "companies"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "teams_apps_companies"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "creds"."rv" IS 'use for handle hybrid concurrncy';
+
+COMMENT ON COLUMN "users_info"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "users"."cred_id" IS 'one to one, cred contain deleted ones';
 
@@ -454,45 +419,17 @@ COMMENT ON COLUMN "users"."user_info_id" IS 'one to one';
 
 COMMENT ON COLUMN "users"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "users_info"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "creds"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "roles"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "positions"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "teams"."rv" IS 'use for handle hybrid concurrncy';
-
 COMMENT ON COLUMN "bank_account"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "bank_account_all"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "apps"."rv" IS 'use for handle hybrid concurrncy';
+COMMENT ON COLUMN "users_roles_apps_companies"."rv" IS 'use for handle hybrid concurrncy';
 
-COMMENT ON COLUMN "industries"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "companies"."region" IS 'which continental?';
-
-COMMENT ON COLUMN "companies"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "teams_companies"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "teams_apps"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "companies_apps"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "users_roles"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "users_teams"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "users_apps"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "users_positions"."rv" IS 'use for handle hybrid concurrncy';
-
-COMMENT ON COLUMN "users_companies"."rv" IS 'use for handle hybrid concurrncy';
+COMMENT ON COLUMN "users_roles_apps_positions_teams_companies"."rv" IS 'use for handle hybrid concurrncy';
 
 COMMENT ON COLUMN "business_logs"."position_id" IS 'maybe is it a guest';
+
+COMMENT ON COLUMN "business_logs"."company_id" IS 'maybe is it a guest';
 
 COMMENT ON COLUMN "business_logs"."role_id" IS 'maybe is it a guest';
 
