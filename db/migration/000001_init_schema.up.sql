@@ -12,7 +12,7 @@ SET statement_timeout = "10s";
 
 CREATE TABLE "industries" (
   "industry_id" BIGSERIAL PRIMARY KEY,
-  "industry" varchar(100) UNIQUE NOT NULL,
+  "industry" varchar(50) UNIQUE NOT NULL,
   "how_clean" int NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
@@ -24,7 +24,7 @@ CREATE TABLE "industries" (
 
 CREATE TABLE "statuses" (
   "status_id" BIGSERIAL PRIMARY KEY,
-  "status" varchar(100),
+  "status" varchar(50),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
@@ -68,7 +68,7 @@ CREATE TABLE "apps" (
   "android" boolean,
   "pwa" boolean,
   "paid" boolean DEFAULT false,
-  "industry_id" bigint,
+  "industry_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
@@ -81,7 +81,7 @@ CREATE TABLE "apps" (
 CREATE TABLE "teams" (
   "team_id" BIGSERIAL PRIMARY KEY,
   "team" varchar(100) NOT NULL,
-  "industry_id" bigint,
+  "industry_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
@@ -166,22 +166,6 @@ CREATE TABLE "creds" (
   CHECK("created_at" < "updated_at")
 );
 
-CREATE TABLE "users" (
-  "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "email" varchar(40) UNIQUE NOT NULL,
-  "username" varchar(30) UNIQUE NOT NULL,
-  "status_id" bigint NOT NULL DEFAULT 1,
-  "cred_id" UUID UNIQUE NOT NULL,
-  "bank_account_all_id" UUID,
-  "user_info_id" UUID UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
 CREATE TABLE "users_info" (
   "user_info_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   "first_name" varchar(50),
@@ -197,11 +181,12 @@ CREATE TABLE "users_info" (
   "home_address" varchar(200),
   "current_city" varchar(75),
   "born_country" varchar(75),
+  "living_country" varchar(75),
   "current_country" varchar(75),
   "zip_code" varchar(75),
-  "national_number" varchar(30) UNIQUE,
-  "national_card_pic" varchar(200) UNIQUE,
-  "passport_number_type" varchar(50) UNIQUE,
+  "national_number" varchar(30),
+  "national_card_pic" varchar(200),
+  "passport_number_type" varchar(50),
   "passport_pic" varchar(200) UNIQUE,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
@@ -209,7 +194,25 @@ CREATE TABLE "users_info" (
   "deleted" boolean DEFAULT false,
   "rv" integer NOT NULL DEFAULT 0,
   CHECK("created_at" < "updated_at"),
-  UNIQUE("first_name", "last_name", "dob", "national_number", "born_country")
+  UNIQUE("first_name", "last_name", "dob", "born_country", "living_country"),
+  UNIQUE("current_country", "national_number"),
+  UNIQUE("current_country", "passport_number_type")
+);
+
+CREATE TABLE "users" (
+  "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "email" varchar(40) UNIQUE NOT NULL,
+  "username" varchar(30) UNIQUE NOT NULL,
+  "status_id" bigint NOT NULL DEFAULT 2,
+  "cred_id" UUID UNIQUE NOT NULL,
+  "bank_account_all_id" UUID UNIQUE,
+  "user_info_id" UUID UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
 );
 
 CREATE TABLE "bank_account" (
@@ -229,11 +232,11 @@ CREATE TABLE "bank_account" (
 
 CREATE TABLE "bank_account_all" (
   "bank_account_all_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "account_1" bigint,
-  "account_2" bigint,
-  "account_3" bigint,
-  "account_4" bigint,
-  "account_5" bigint,
+  "account_1" bigint UNIQUE,
+  "account_2" bigint UNIQUE,
+  "account_3" bigint UNIQUE,
+  "account_4" bigint UNIQUE,
+  "account_5" bigint UNIQUE,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
