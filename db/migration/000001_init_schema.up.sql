@@ -8,6 +8,164 @@ create extension if not exists "uuid-ossp";
 
 SET statement_timeout = "10s";
 
+-- --------------------------------
+
+CREATE TABLE "industries" (
+  "industry_id" BIGSERIAL PRIMARY KEY,
+  "industry" varchar(100) UNIQUE NOT NULL,
+  "how_clean" int NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "statuses" (
+  "status_id" BIGSERIAL PRIMARY KEY,
+  "status" varchar(100),
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "roles" (
+  "role_id" BIGSERIAL PRIMARY KEY,
+  "role" varchar(30) UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "positions" (
+  "position_id" BIGSERIAL PRIMARY KEY,
+  "department" varchar(50) NOT NULL,
+  "position" varchar(50) NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("department", "position")
+);
+
+CREATE TABLE "apps" (
+  "app_id" BIGSERIAL PRIMARY KEY,
+  "app" varchar(100) UNIQUE NOT NULL,
+  "app_base_os" varchar(30) NOT NULL,
+  "desktop" boolean,
+  "web" boolean,
+  "mobile" boolean,
+  "ios" boolean,
+  "android" boolean,
+  "pwa" boolean,
+  "paid" boolean DEFAULT false,
+  "industry_id" bigint,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
+);
+
+CREATE TABLE "teams" (
+  "team_id" BIGSERIAL PRIMARY KEY,
+  "team" varchar(100) NOT NULL,
+  "industry_id" bigint,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
+CREATE TABLE "companies" (
+  "company_id" SERIAL PRIMARY KEY,
+  "company" varchar(100) NOT NULL,
+  "bio" varchar(2000) NOT NULL,
+  "country" varchar(50) NOT NULL,
+  "region" varchar(50) NOT NULL,
+  "ceo" varchar(100),
+  "manager" varchar(100),
+  "hr" varchar(100),
+  "address" varchar(400) NOT NULL,
+  "how_clean" int NOT NULL,
+  "industry_id" bigint NOT NULL,
+  "bank_account_all_id" UUID,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
+);
+
+-- ----------------
+
+CREATE TABLE "teams_companies" (
+  "teams_company_id" BIGSERIAL PRIMARY KEY,
+  "team_id" bigint NOT NULL,
+  "company_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("team_id", "company_id")
+);
+
+CREATE TABLE "teams_apps" (
+  "team_app_id" BIGSERIAL PRIMARY KEY,
+  "team_id" bigint NOT NULL,
+  "app_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("team_id", "app_id")
+);
+
+CREATE TABLE "companies_apps" (
+  "company_app_id" BIGSERIAL PRIMARY KEY,
+  "company_id" bigint NOT NULL,
+  "app_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer DEFAULT 0,
+  CHECK("created_at" < "updated_at"),
+  UNIQUE("company_id", "app_id")
+);
+
+-- --------------------------------
+
+CREATE TABLE "creds" (
+  "cred_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "hashed_pass" varchar(200) NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "updated_at" timestamptz,
+  "deleted_at" timestamptz,
+  "deleted" boolean DEFAULT false,
+  "rv" integer NOT NULL DEFAULT 0,
+  CHECK("created_at" < "updated_at")
+);
+
 CREATE TABLE "users" (
   "user_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   "email" varchar(40) UNIQUE NOT NULL,
@@ -54,17 +212,6 @@ CREATE TABLE "users_info" (
   UNIQUE("first_name", "last_name", "dob", "national_number", "born_country")
 );
 
-CREATE TABLE "creds" (
-  "cred_id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "hashed_pass" varchar(200) NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
 CREATE TABLE "bank_account" (
   "bank_account_id" BIGSERIAL PRIMARY KEY,
   "bank" varchar(100) NOT NULL,
@@ -96,141 +243,7 @@ CREATE TABLE "bank_account_all" (
   CHECK(COALESCE("account_1", "account_2", "account_3", "account_4", "account_5") IS NOT NULL)
 );
 
-CREATE TABLE "user_logs" (
-  "user_logs_id" BIGSERIAL PRIMARY KEY,
-  "event" varchar(50) NOT NULL,
-  "device" varchar(50) NOT NULL,
-  "os" varchar(50) NOT NULL,
-  "ip" varchar(50) NOT NULL,
-  "agent" varchar(50) NOT NULL,
-  "position_id" bigint NOT NULL,
-  "company_id" bigint NOT NULL,
-  "role_id" bigint NOT NULL,
-  "team_id" bigint NOT NULL,
-  "app_id" bigint NOT NULL,
-  "creator" UUID NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
-);
-
-CREATE TABLE "business_logs" (
-  "business_log_id" BIGSERIAL PRIMARY KEY,
-  "event" varchar(50) NOT NULL,
-  "device" varchar(50) NOT NULL,
-  "os" varchar(50) NOT NULL,
-  "ip" varchar(50) NOT NULL,
-  "agent" varchar(50) NOT NULL,
-  "position_id" bigint,
-  "company_id" bigint,
-  "role_id" bigint NOT NULL,
-  "team_id" bigint,
-  "app_id" bigint NOT NULL,
-  "creator" UUID,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
-);
-
-CREATE TABLE "industries" (
-  "industry_id" BIGSERIAL PRIMARY KEY,
-  "industry" varchar(100) UNIQUE NOT NULL,
-  "how_clean" int NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "statuses" (
-  "status_id" BIGSERIAL PRIMARY KEY,
-  "status" varchar(100),
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "roles" (
-  "role_id" BIGSERIAL PRIMARY KEY,
-  "role" varchar(30) UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-
-CREATE TABLE "apps" (
-  "app_id" BIGSERIAL PRIMARY KEY,
-  "app" varchar(100) UNIQUE NOT NULL,
-  "app_base_os" varchar(30) NOT NULL,
-  "desktop" boolean,
-  "web" boolean,
-  "mobile" boolean,
-  "ios" boolean,
-  "android" boolean,
-  "pwa" boolean,
-  "paid" boolean DEFAULT false,
-  "industry_id" bigint,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("desktop", "web", "mobile") IS NOT NULL)
-);
-
-CREATE TABLE "teams" (
-  "team_id" BIGSERIAL PRIMARY KEY,
-  "team" varchar(100) NOT NULL,
-  "industry_id" bigint,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "companies" (
-  "company_id" SERIAL PRIMARY KEY,
-  "company" varchar(100) NOT NULL,
-  "bio" varchar(2000) NOT NULL,
-  "country" varchar(50) NOT NULL,
-  "region" varchar(50) NOT NULL,
-  "ceo" varchar(100),
-  "manager" varchar(100),
-  "hr" varchar(100),
-  "address" varchar(400) NOT NULL,
-  "how_clean" int NOT NULL,
-  "industry_id" bigint,
-  "bank_account_all_id" UUID,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at"),
-  CHECK(COALESCE("ceo", "manager", "hr") IS NOT NULL)
-);
-
-
-CREATE TABLE "positions" (
-  "position_id" BIGSERIAL PRIMARY KEY,
-  "position" varchar(50) UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer NOT NULL DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-
+-- --------------
 
 CREATE TABLE "users_roles" (
   "user_role_id" BIGSERIAL PRIMARY KEY,
@@ -292,43 +305,41 @@ CREATE TABLE "users_companies" (
   CHECK("created_at" < "updated_at")
 );
 
+-- -----------------
 
-CREATE TABLE "teams_companies" (
-  "teams_company_id" BIGSERIAL PRIMARY KEY,
-  "team_id" bigint NOT NULL,
+CREATE TABLE "user_logs" (
+  "user_logs_id" BIGSERIAL PRIMARY KEY,
+  "event" varchar(50) NOT NULL,
+  "device" varchar(50) NOT NULL,
+  "os" varchar(50) NOT NULL,
+  "ip" varchar(50) NOT NULL,
+  "agent" varchar(50) NOT NULL,
+  "position_id" bigint NOT NULL,
   "company_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
-);
-
-CREATE TABLE "teams_apps" (
-  "team_app_id" BIGSERIAL PRIMARY KEY,
+  "role_id" bigint NOT NULL,
   "team_id" bigint NOT NULL,
   "app_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  "creator" UUID NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "companies_apps" (
-  "company_app_id" BIGSERIAL PRIMARY KEY,
-  "company_id" bigint NOT NULL,
+CREATE TABLE "business_logs" (
+  "business_log_id" BIGSERIAL PRIMARY KEY,
+  "event" varchar(50) NOT NULL,
+  "device" varchar(50) NOT NULL,
+  "os" varchar(50) NOT NULL,
+  "ip" varchar(50) NOT NULL,
+  "agent" varchar(50) NOT NULL,
+  "position_id" bigint,
+  "company_id" bigint,
+  "role_id" bigint NOT NULL,
+  "team_id" bigint,
   "app_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz,
-  "deleted_at" timestamptz,
-  "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
-  CHECK("created_at" < "updated_at")
+  "creator" UUID,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+-- -----------------
 
 ALTER TABLE "users" ADD FOREIGN KEY ("status_id") REFERENCES "statuses" ("status_id");
 
