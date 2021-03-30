@@ -1,5 +1,5 @@
 // test need talk to db , we have to setup connection and the queries object first
-package db
+package pgdb
 
 import (
 	"database/sql"

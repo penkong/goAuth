@@ -115,7 +115,7 @@ CREATE TABLE "companies" (
 -- ----------------
 
 CREATE TABLE "teams_apps_companies" (
-  "team_app_id" BIGSERIAL PRIMARY KEY,
+  "team_app_company_id" BIGSERIAL PRIMARY KEY,
   "team_id" bigint,
   "app_id" bigint,
   "company_id" bigint,
