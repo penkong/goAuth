@@ -9,10 +9,7 @@ DROP TABLE IF EXISTS "teams" CASCADE;
 DROP TABLE IF EXISTS "companies" CASCADE;
 
 -- conjunction info tables
-DROP TABLE IF EXISTS "teams_companies" CASCADE;
-DROP TABLE IF EXISTS "teams_apps" CASCADE;
-
-DROP TABLE IF EXISTS "companies_apps" CASCADE;
+DROP TABLE IF EXISTS "teams_apps_companies" CASCADE;
 
 -- onCreation tables
 DROP TABLE IF EXISTS "creds" CASCADE;
@@ -22,11 +19,9 @@ DROP TABLE IF EXISTS "bank_account" CASCADE;
 DROP TABLE IF EXISTS "bank_account_all" CASCADE;
 
 -- conjunction tables on creation
-DROP TABLE IF EXISTS "users_roles" CASCADE; 
-DROP TABLE IF EXISTS "users_teams" CASCADE; 
-DROP TABLE IF EXISTS "users_apps"CASCADE; 
-DROP TABLE IF EXISTS "users_positions"  CASCADE; 
-DROP TABLE IF EXISTS "users_companies" CASCADE; 
+DROP TABLE IF EXISTS "users_roles_apps_companies" CASCADE; 
+DROP TABLE IF EXISTS "users_roles_apps_positions_teams_companies" CASCADE; 
+
 
 
 -- log tables

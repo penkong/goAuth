@@ -4,6 +4,7 @@ package pgdb
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -30,6 +31,31 @@ type Querier interface {
 	DeleteStatus(ctx context.Context, industryID int64) error
 	DeleteTeam(ctx context.Context, teamID int64) error
 	DeleteTeamsAppsCompanies(ctx context.Context, teamAppCompanyID int64) error
+	GetAppById(ctx context.Context, appID int64) (GetAppByIdRow, error)
+	GetAppByName(ctx context.Context, app string) (GetAppByNameRow, error)
+	GetApps(ctx context.Context) ([]GetAppsRow, error)
+	GetBanAccountAllById(ctx context.Context, bankAccountAllID uuid.UUID) (GetBanAccountAllByIdRow, error)
+	GetCompanies(ctx context.Context, arg GetCompaniesParams) ([]GetCompaniesRow, error)
+	GetCompanyById(ctx context.Context, companyID int32) (GetCompanyByIdRow, error)
+	GetCompanyByName(ctx context.Context, company string) (GetCompanyByNameRow, error)
+	GetIndustries(ctx context.Context) ([]GetIndustriesRow, error)
+	GetIndustryById(ctx context.Context, industryID int64) (GetIndustryByIdRow, error)
+	GetIndustryByName(ctx context.Context, industry string) (GetIndustryByNameRow, error)
+	GetPositionByDepartment(ctx context.Context, department string) (GetPositionByDepartmentRow, error)
+	GetPositionById(ctx context.Context, positionID int64) (GetPositionByIdRow, error)
+	GetPositionByName(ctx context.Context, position string) (GetPositionByNameRow, error)
+	GetPositions(ctx context.Context) ([]GetPositionsRow, error)
+	GetRoleById(ctx context.Context, roleID int64) (GetRoleByIdRow, error)
+	GetRoleByName(ctx context.Context, role string) (GetRoleByNameRow, error)
+	GetRoles(ctx context.Context) ([]GetRolesRow, error)
+	GetStatusById(ctx context.Context, statusID int64) (GetStatusByIdRow, error)
+	GetStatusByName(ctx context.Context, status sql.NullString) (GetStatusByNameRow, error)
+	GetStatuses(ctx context.Context) ([]GetStatusesRow, error)
+	GetTeamById(ctx context.Context, teamID int64) (GetTeamByIdRow, error)
+	GetTeamByName(ctx context.Context, team string) (GetTeamByNameRow, error)
+	GetTeams(ctx context.Context, arg GetTeamsParams) ([]GetTeamsRow, error)
+	GetTeamsAppsCompanies(ctx context.Context, arg GetTeamsAppsCompaniesParams) ([]GetTeamsAppsCompaniesRow, error)
+	GetTeamsAppsCompaniesById(ctx context.Context, teamAppCompanyID int64) (GetTeamsAppsCompaniesByIdRow, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -85,6 +85,81 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteTeamsAppsCompaniesStmt, err = db.PrepareContext(ctx, deleteTeamsAppsCompanies); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteTeamsAppsCompanies: %w", err)
 	}
+	if q.getAppByIdStmt, err = db.PrepareContext(ctx, getAppById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAppById: %w", err)
+	}
+	if q.getAppByNameStmt, err = db.PrepareContext(ctx, getAppByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAppByName: %w", err)
+	}
+	if q.getAppsStmt, err = db.PrepareContext(ctx, getApps); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApps: %w", err)
+	}
+	if q.getBanAccountAllByIdStmt, err = db.PrepareContext(ctx, getBanAccountAllById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBanAccountAllById: %w", err)
+	}
+	if q.getCompaniesStmt, err = db.PrepareContext(ctx, getCompanies); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCompanies: %w", err)
+	}
+	if q.getCompanyByIdStmt, err = db.PrepareContext(ctx, getCompanyById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCompanyById: %w", err)
+	}
+	if q.getCompanyByNameStmt, err = db.PrepareContext(ctx, getCompanyByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCompanyByName: %w", err)
+	}
+	if q.getIndustriesStmt, err = db.PrepareContext(ctx, getIndustries); err != nil {
+		return nil, fmt.Errorf("error preparing query GetIndustries: %w", err)
+	}
+	if q.getIndustryByIdStmt, err = db.PrepareContext(ctx, getIndustryById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetIndustryById: %w", err)
+	}
+	if q.getIndustryByNameStmt, err = db.PrepareContext(ctx, getIndustryByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetIndustryByName: %w", err)
+	}
+	if q.getPositionByDepartmentStmt, err = db.PrepareContext(ctx, getPositionByDepartment); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPositionByDepartment: %w", err)
+	}
+	if q.getPositionByIdStmt, err = db.PrepareContext(ctx, getPositionById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPositionById: %w", err)
+	}
+	if q.getPositionByNameStmt, err = db.PrepareContext(ctx, getPositionByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPositionByName: %w", err)
+	}
+	if q.getPositionsStmt, err = db.PrepareContext(ctx, getPositions); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPositions: %w", err)
+	}
+	if q.getRoleByIdStmt, err = db.PrepareContext(ctx, getRoleById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRoleById: %w", err)
+	}
+	if q.getRoleByNameStmt, err = db.PrepareContext(ctx, getRoleByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRoleByName: %w", err)
+	}
+	if q.getRolesStmt, err = db.PrepareContext(ctx, getRoles); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRoles: %w", err)
+	}
+	if q.getStatusByIdStmt, err = db.PrepareContext(ctx, getStatusById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStatusById: %w", err)
+	}
+	if q.getStatusByNameStmt, err = db.PrepareContext(ctx, getStatusByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStatusByName: %w", err)
+	}
+	if q.getStatusesStmt, err = db.PrepareContext(ctx, getStatuses); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStatuses: %w", err)
+	}
+	if q.getTeamByIdStmt, err = db.PrepareContext(ctx, getTeamById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTeamById: %w", err)
+	}
+	if q.getTeamByNameStmt, err = db.PrepareContext(ctx, getTeamByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTeamByName: %w", err)
+	}
+	if q.getTeamsStmt, err = db.PrepareContext(ctx, getTeams); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTeams: %w", err)
+	}
+	if q.getTeamsAppsCompaniesStmt, err = db.PrepareContext(ctx, getTeamsAppsCompanies); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTeamsAppsCompanies: %w", err)
+	}
+	if q.getTeamsAppsCompaniesByIdStmt, err = db.PrepareContext(ctx, getTeamsAppsCompaniesById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTeamsAppsCompaniesById: %w", err)
+	}
 	return &q, nil
 }
 
@@ -195,6 +270,131 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteTeamsAppsCompaniesStmt: %w", cerr)
 		}
 	}
+	if q.getAppByIdStmt != nil {
+		if cerr := q.getAppByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAppByIdStmt: %w", cerr)
+		}
+	}
+	if q.getAppByNameStmt != nil {
+		if cerr := q.getAppByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAppByNameStmt: %w", cerr)
+		}
+	}
+	if q.getAppsStmt != nil {
+		if cerr := q.getAppsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAppsStmt: %w", cerr)
+		}
+	}
+	if q.getBanAccountAllByIdStmt != nil {
+		if cerr := q.getBanAccountAllByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBanAccountAllByIdStmt: %w", cerr)
+		}
+	}
+	if q.getCompaniesStmt != nil {
+		if cerr := q.getCompaniesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCompaniesStmt: %w", cerr)
+		}
+	}
+	if q.getCompanyByIdStmt != nil {
+		if cerr := q.getCompanyByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCompanyByIdStmt: %w", cerr)
+		}
+	}
+	if q.getCompanyByNameStmt != nil {
+		if cerr := q.getCompanyByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCompanyByNameStmt: %w", cerr)
+		}
+	}
+	if q.getIndustriesStmt != nil {
+		if cerr := q.getIndustriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getIndustriesStmt: %w", cerr)
+		}
+	}
+	if q.getIndustryByIdStmt != nil {
+		if cerr := q.getIndustryByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getIndustryByIdStmt: %w", cerr)
+		}
+	}
+	if q.getIndustryByNameStmt != nil {
+		if cerr := q.getIndustryByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getIndustryByNameStmt: %w", cerr)
+		}
+	}
+	if q.getPositionByDepartmentStmt != nil {
+		if cerr := q.getPositionByDepartmentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPositionByDepartmentStmt: %w", cerr)
+		}
+	}
+	if q.getPositionByIdStmt != nil {
+		if cerr := q.getPositionByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPositionByIdStmt: %w", cerr)
+		}
+	}
+	if q.getPositionByNameStmt != nil {
+		if cerr := q.getPositionByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPositionByNameStmt: %w", cerr)
+		}
+	}
+	if q.getPositionsStmt != nil {
+		if cerr := q.getPositionsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPositionsStmt: %w", cerr)
+		}
+	}
+	if q.getRoleByIdStmt != nil {
+		if cerr := q.getRoleByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRoleByIdStmt: %w", cerr)
+		}
+	}
+	if q.getRoleByNameStmt != nil {
+		if cerr := q.getRoleByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRoleByNameStmt: %w", cerr)
+		}
+	}
+	if q.getRolesStmt != nil {
+		if cerr := q.getRolesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRolesStmt: %w", cerr)
+		}
+	}
+	if q.getStatusByIdStmt != nil {
+		if cerr := q.getStatusByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStatusByIdStmt: %w", cerr)
+		}
+	}
+	if q.getStatusByNameStmt != nil {
+		if cerr := q.getStatusByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStatusByNameStmt: %w", cerr)
+		}
+	}
+	if q.getStatusesStmt != nil {
+		if cerr := q.getStatusesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStatusesStmt: %w", cerr)
+		}
+	}
+	if q.getTeamByIdStmt != nil {
+		if cerr := q.getTeamByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTeamByIdStmt: %w", cerr)
+		}
+	}
+	if q.getTeamByNameStmt != nil {
+		if cerr := q.getTeamByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTeamByNameStmt: %w", cerr)
+		}
+	}
+	if q.getTeamsStmt != nil {
+		if cerr := q.getTeamsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTeamsStmt: %w", cerr)
+		}
+	}
+	if q.getTeamsAppsCompaniesStmt != nil {
+		if cerr := q.getTeamsAppsCompaniesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTeamsAppsCompaniesStmt: %w", cerr)
+		}
+	}
+	if q.getTeamsAppsCompaniesByIdStmt != nil {
+		if cerr := q.getTeamsAppsCompaniesByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTeamsAppsCompaniesByIdStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -255,6 +455,31 @@ type Queries struct {
 	deleteStatusStmt              *sql.Stmt
 	deleteTeamStmt                *sql.Stmt
 	deleteTeamsAppsCompaniesStmt  *sql.Stmt
+	getAppByIdStmt                *sql.Stmt
+	getAppByNameStmt              *sql.Stmt
+	getAppsStmt                   *sql.Stmt
+	getBanAccountAllByIdStmt      *sql.Stmt
+	getCompaniesStmt              *sql.Stmt
+	getCompanyByIdStmt            *sql.Stmt
+	getCompanyByNameStmt          *sql.Stmt
+	getIndustriesStmt             *sql.Stmt
+	getIndustryByIdStmt           *sql.Stmt
+	getIndustryByNameStmt         *sql.Stmt
+	getPositionByDepartmentStmt   *sql.Stmt
+	getPositionByIdStmt           *sql.Stmt
+	getPositionByNameStmt         *sql.Stmt
+	getPositionsStmt              *sql.Stmt
+	getRoleByIdStmt               *sql.Stmt
+	getRoleByNameStmt             *sql.Stmt
+	getRolesStmt                  *sql.Stmt
+	getStatusByIdStmt             *sql.Stmt
+	getStatusByNameStmt           *sql.Stmt
+	getStatusesStmt               *sql.Stmt
+	getTeamByIdStmt               *sql.Stmt
+	getTeamByNameStmt             *sql.Stmt
+	getTeamsStmt                  *sql.Stmt
+	getTeamsAppsCompaniesStmt     *sql.Stmt
+	getTeamsAppsCompaniesByIdStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -282,5 +507,30 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteStatusStmt:              q.deleteStatusStmt,
 		deleteTeamStmt:                q.deleteTeamStmt,
 		deleteTeamsAppsCompaniesStmt:  q.deleteTeamsAppsCompaniesStmt,
+		getAppByIdStmt:                q.getAppByIdStmt,
+		getAppByNameStmt:              q.getAppByNameStmt,
+		getAppsStmt:                   q.getAppsStmt,
+		getBanAccountAllByIdStmt:      q.getBanAccountAllByIdStmt,
+		getCompaniesStmt:              q.getCompaniesStmt,
+		getCompanyByIdStmt:            q.getCompanyByIdStmt,
+		getCompanyByNameStmt:          q.getCompanyByNameStmt,
+		getIndustriesStmt:             q.getIndustriesStmt,
+		getIndustryByIdStmt:           q.getIndustryByIdStmt,
+		getIndustryByNameStmt:         q.getIndustryByNameStmt,
+		getPositionByDepartmentStmt:   q.getPositionByDepartmentStmt,
+		getPositionByIdStmt:           q.getPositionByIdStmt,
+		getPositionByNameStmt:         q.getPositionByNameStmt,
+		getPositionsStmt:              q.getPositionsStmt,
+		getRoleByIdStmt:               q.getRoleByIdStmt,
+		getRoleByNameStmt:             q.getRoleByNameStmt,
+		getRolesStmt:                  q.getRolesStmt,
+		getStatusByIdStmt:             q.getStatusByIdStmt,
+		getStatusByNameStmt:           q.getStatusByNameStmt,
+		getStatusesStmt:               q.getStatusesStmt,
+		getTeamByIdStmt:               q.getTeamByIdStmt,
+		getTeamByNameStmt:             q.getTeamByNameStmt,
+		getTeamsStmt:                  q.getTeamsStmt,
+		getTeamsAppsCompaniesStmt:     q.getTeamsAppsCompaniesStmt,
+		getTeamsAppsCompaniesByIdStmt: q.getTeamsAppsCompaniesByIdStmt,
 	}
 }
