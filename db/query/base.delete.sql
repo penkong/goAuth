@@ -2,7 +2,7 @@
 UPDATE
   industries 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   industry_id = $1;
 
@@ -10,7 +10,7 @@ WHERE
 UPDATE
   industries 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   industry_id = $1;
 
@@ -18,7 +18,7 @@ WHERE
 UPDATE
   roles 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   role_id = $1;
 
@@ -26,54 +26,54 @@ WHERE
 UPDATE
   positions 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  position_id = $1;
+  position_id = $1 AND deleted = false;
 
 -- name: DeleteApp :exec
 UPDATE
   apps 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  app_id = $1;
+  app_id = $1 AND deleted = false;
 
 -- name: DeleteTeam :exec
 UPDATE
   teams
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  team_id = $1;
+  team_id = $1 AND deleted = false;
 
 -- name: DeleteCompany :exec
 UPDATE
   companies
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  company_id = $1;
+  company_id = $1 AND deleted = false;
 
 -- name: DeleteTeamsAppsCompanies :exec
 UPDATE
   teams_apps_companies
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  team_app_company_id = $1;
+  team_app_company_id = $1 AND deleted = false;
 
 -- name: DeleteBankAccount :exec
 UPDATE
   bank_account
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  bank_account_id = $1;
+  bank_account_id = $1 AND deleted = false;
 
 -- name: DeleteBankAccountAll :exec
 UPDATE
   bank_account_all
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  bank_account_all_id = $1;
+  bank_account_all_id = $1 AND deleted = false;
