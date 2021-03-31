@@ -115,6 +115,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getBanAccountAllByIdStmt, err = db.PrepareContext(ctx, getBanAccountAllById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetBanAccountAllById: %w", err)
 	}
+	if q.getBankAccountAllBasicStmt, err = db.PrepareContext(ctx, getBankAccountAllBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBankAccountAllBasic: %w", err)
+	}
 	if q.getCompaniesStmt, err = db.PrepareContext(ctx, getCompanies); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCompanies: %w", err)
 	}
@@ -123,6 +126,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getCompanyByNameStmt, err = db.PrepareContext(ctx, getCompanyByName); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCompanyByName: %w", err)
+	}
+	if q.getCredStmt, err = db.PrepareContext(ctx, getCred); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCred: %w", err)
 	}
 	if q.getIndustriesStmt, err = db.PrepareContext(ctx, getIndustries); err != nil {
 		return nil, fmt.Errorf("error preparing query GetIndustries: %w", err)
@@ -177,6 +183,18 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getTeamsAppsCompaniesByIdStmt, err = db.PrepareContext(ctx, getTeamsAppsCompaniesById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTeamsAppsCompaniesById: %w", err)
+	}
+	if q.getUserBasicStmt, err = db.PrepareContext(ctx, getUserBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserBasic: %w", err)
+	}
+	if q.getUserInfoBasicStmt, err = db.PrepareContext(ctx, getUserInfoBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserInfoBasic: %w", err)
+	}
+	if q.getUserRoleAppCompanyByUserAppIdStmt, err = db.PrepareContext(ctx, getUserRoleAppCompanyByUserAppId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserRoleAppCompanyByUserAppId: %w", err)
+	}
+	if q.getUserRoleAppPositionTeamCompanyStmt, err = db.PrepareContext(ctx, getUserRoleAppPositionTeamCompany); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserRoleAppPositionTeamCompany: %w", err)
 	}
 	if q.updateAppByIdStmt, err = db.PrepareContext(ctx, updateAppById); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateAppById: %w", err)
@@ -386,6 +404,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getBanAccountAllByIdStmt: %w", cerr)
 		}
 	}
+	if q.getBankAccountAllBasicStmt != nil {
+		if cerr := q.getBankAccountAllBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBankAccountAllBasicStmt: %w", cerr)
+		}
+	}
 	if q.getCompaniesStmt != nil {
 		if cerr := q.getCompaniesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCompaniesStmt: %w", cerr)
@@ -399,6 +422,11 @@ func (q *Queries) Close() error {
 	if q.getCompanyByNameStmt != nil {
 		if cerr := q.getCompanyByNameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCompanyByNameStmt: %w", cerr)
+		}
+	}
+	if q.getCredStmt != nil {
+		if cerr := q.getCredStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCredStmt: %w", cerr)
 		}
 	}
 	if q.getIndustriesStmt != nil {
@@ -489,6 +517,26 @@ func (q *Queries) Close() error {
 	if q.getTeamsAppsCompaniesByIdStmt != nil {
 		if cerr := q.getTeamsAppsCompaniesByIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getTeamsAppsCompaniesByIdStmt: %w", cerr)
+		}
+	}
+	if q.getUserBasicStmt != nil {
+		if cerr := q.getUserBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserBasicStmt: %w", cerr)
+		}
+	}
+	if q.getUserInfoBasicStmt != nil {
+		if cerr := q.getUserInfoBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserInfoBasicStmt: %w", cerr)
+		}
+	}
+	if q.getUserRoleAppCompanyByUserAppIdStmt != nil {
+		if cerr := q.getUserRoleAppCompanyByUserAppIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserRoleAppCompanyByUserAppIdStmt: %w", cerr)
+		}
+	}
+	if q.getUserRoleAppPositionTeamCompanyStmt != nil {
+		if cerr := q.getUserRoleAppPositionTeamCompanyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserRoleAppPositionTeamCompanyStmt: %w", cerr)
 		}
 	}
 	if q.updateAppByIdStmt != nil {
@@ -641,9 +689,11 @@ type Queries struct {
 	getAppByNameStmt                         *sql.Stmt
 	getAppsStmt                              *sql.Stmt
 	getBanAccountAllByIdStmt                 *sql.Stmt
+	getBankAccountAllBasicStmt               *sql.Stmt
 	getCompaniesStmt                         *sql.Stmt
 	getCompanyByIdStmt                       *sql.Stmt
 	getCompanyByNameStmt                     *sql.Stmt
+	getCredStmt                              *sql.Stmt
 	getIndustriesStmt                        *sql.Stmt
 	getIndustryByIdStmt                      *sql.Stmt
 	getIndustryByNameStmt                    *sql.Stmt
@@ -662,6 +712,10 @@ type Queries struct {
 	getTeamsStmt                             *sql.Stmt
 	getTeamsAppsCompaniesStmt                *sql.Stmt
 	getTeamsAppsCompaniesByIdStmt            *sql.Stmt
+	getUserBasicStmt                         *sql.Stmt
+	getUserInfoBasicStmt                     *sql.Stmt
+	getUserRoleAppCompanyByUserAppIdStmt     *sql.Stmt
+	getUserRoleAppPositionTeamCompanyStmt    *sql.Stmt
 	updateAppByIdStmt                        *sql.Stmt
 	updateAppByNameStmt                      *sql.Stmt
 	updateAppByPaidStmt                      *sql.Stmt
@@ -715,9 +769,11 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getAppByNameStmt:                         q.getAppByNameStmt,
 		getAppsStmt:                              q.getAppsStmt,
 		getBanAccountAllByIdStmt:                 q.getBanAccountAllByIdStmt,
+		getBankAccountAllBasicStmt:               q.getBankAccountAllBasicStmt,
 		getCompaniesStmt:                         q.getCompaniesStmt,
 		getCompanyByIdStmt:                       q.getCompanyByIdStmt,
 		getCompanyByNameStmt:                     q.getCompanyByNameStmt,
+		getCredStmt:                              q.getCredStmt,
 		getIndustriesStmt:                        q.getIndustriesStmt,
 		getIndustryByIdStmt:                      q.getIndustryByIdStmt,
 		getIndustryByNameStmt:                    q.getIndustryByNameStmt,
@@ -736,6 +792,10 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getTeamsStmt:                             q.getTeamsStmt,
 		getTeamsAppsCompaniesStmt:                q.getTeamsAppsCompaniesStmt,
 		getTeamsAppsCompaniesByIdStmt:            q.getTeamsAppsCompaniesByIdStmt,
+		getUserBasicStmt:                         q.getUserBasicStmt,
+		getUserInfoBasicStmt:                     q.getUserInfoBasicStmt,
+		getUserRoleAppCompanyByUserAppIdStmt:     q.getUserRoleAppCompanyByUserAppIdStmt,
+		getUserRoleAppPositionTeamCompanyStmt:    q.getUserRoleAppPositionTeamCompanyStmt,
 		updateAppByIdStmt:                        q.updateAppByIdStmt,
 		updateAppByNameStmt:                      q.updateAppByNameStmt,
 		updateAppByPaidStmt:                      q.updateAppByPaidStmt,
