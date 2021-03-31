@@ -93,3 +93,7 @@ create extension if not exists "uuid-ossp";
 \df
 
 id uuid DEFAULT uuid_generate_v4 ()
+
+===============
+
+go mod init github.com/penkong/goAtuh

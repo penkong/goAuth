@@ -1,7 +1,7 @@
 version: '1'
 packages:
   - name: 'pgdb'
-    path: './db/sqlConsume'
+    path: './db/pgdb'
     queries: './db/query/'
     schema: './db/migration/'
     engine: 'postgresql'
