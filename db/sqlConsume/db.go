@@ -37,6 +37,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createCompanyBasicStmt, err = db.PrepareContext(ctx, createCompanyBasic); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCompanyBasic: %w", err)
 	}
+	if q.createCredsStmt, err = db.PrepareContext(ctx, createCreds); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateCreds: %w", err)
+	}
 	if q.createIndustryBasicStmt, err = db.PrepareContext(ctx, createIndustryBasic); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateIndustryBasic: %w", err)
 	}
@@ -54,6 +57,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.createTeamsAppsCompaniesStmt, err = db.PrepareContext(ctx, createTeamsAppsCompanies); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateTeamsAppsCompanies: %w", err)
+	}
+	if q.createUserBasicStmt, err = db.PrepareContext(ctx, createUserBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserBasic: %w", err)
+	}
+	if q.createUserInfoBasicStmt, err = db.PrepareContext(ctx, createUserInfoBasic); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserInfoBasic: %w", err)
 	}
 	if q.deleteAppStmt, err = db.PrepareContext(ctx, deleteApp); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteApp: %w", err)
@@ -160,6 +169,54 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getTeamsAppsCompaniesByIdStmt, err = db.PrepareContext(ctx, getTeamsAppsCompaniesById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTeamsAppsCompaniesById: %w", err)
 	}
+	if q.updateAppByIdStmt, err = db.PrepareContext(ctx, updateAppById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateAppById: %w", err)
+	}
+	if q.updateAppByNameStmt, err = db.PrepareContext(ctx, updateAppByName); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateAppByName: %w", err)
+	}
+	if q.updateAppByPaidStmt, err = db.PrepareContext(ctx, updateAppByPaid); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateAppByPaid: %w", err)
+	}
+	if q.updateAppEnvsStmt, err = db.PrepareContext(ctx, updateAppEnvs); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateAppEnvs: %w", err)
+	}
+	if q.updateBankAccountStmt, err = db.PrepareContext(ctx, updateBankAccount); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateBankAccount: %w", err)
+	}
+	if q.updateBankAccountAllStmt, err = db.PrepareContext(ctx, updateBankAccountAll); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateBankAccountAll: %w", err)
+	}
+	if q.updateCompanyBankAccountStmt, err = db.PrepareContext(ctx, updateCompanyBankAccount); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateCompanyBankAccount: %w", err)
+	}
+	if q.updateCompanyByIdStmt, err = db.PrepareContext(ctx, updateCompanyById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateCompanyById: %w", err)
+	}
+	if q.updatePostionByIdStmt, err = db.PrepareContext(ctx, updatePostionById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdatePostionById: %w", err)
+	}
+	if q.updateRoleByIdStmt, err = db.PrepareContext(ctx, updateRoleById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoleById: %w", err)
+	}
+	if q.updateRoleByNameStmt, err = db.PrepareContext(ctx, updateRoleByName); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoleByName: %w", err)
+	}
+	if q.updateSatusByIdStmt, err = db.PrepareContext(ctx, updateSatusById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateSatusById: %w", err)
+	}
+	if q.updateSatusByNameStmt, err = db.PrepareContext(ctx, updateSatusByName); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateSatusByName: %w", err)
+	}
+	if q.updateTeamAppCompanyStmt, err = db.PrepareContext(ctx, updateTeamAppCompany); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTeamAppCompany: %w", err)
+	}
+	if q.updateTeamByIdStmt, err = db.PrepareContext(ctx, updateTeamById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTeamById: %w", err)
+	}
+	if q.updateTeamByNameStmt, err = db.PrepareContext(ctx, updateTeamByName); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTeamByName: %w", err)
+	}
 	return &q, nil
 }
 
@@ -190,6 +247,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createCompanyBasicStmt: %w", cerr)
 		}
 	}
+	if q.createCredsStmt != nil {
+		if cerr := q.createCredsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createCredsStmt: %w", cerr)
+		}
+	}
 	if q.createIndustryBasicStmt != nil {
 		if cerr := q.createIndustryBasicStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createIndustryBasicStmt: %w", cerr)
@@ -218,6 +280,16 @@ func (q *Queries) Close() error {
 	if q.createTeamsAppsCompaniesStmt != nil {
 		if cerr := q.createTeamsAppsCompaniesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createTeamsAppsCompaniesStmt: %w", cerr)
+		}
+	}
+	if q.createUserBasicStmt != nil {
+		if cerr := q.createUserBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserBasicStmt: %w", cerr)
+		}
+	}
+	if q.createUserInfoBasicStmt != nil {
+		if cerr := q.createUserInfoBasicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserInfoBasicStmt: %w", cerr)
 		}
 	}
 	if q.deleteAppStmt != nil {
@@ -395,6 +467,86 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getTeamsAppsCompaniesByIdStmt: %w", cerr)
 		}
 	}
+	if q.updateAppByIdStmt != nil {
+		if cerr := q.updateAppByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateAppByIdStmt: %w", cerr)
+		}
+	}
+	if q.updateAppByNameStmt != nil {
+		if cerr := q.updateAppByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateAppByNameStmt: %w", cerr)
+		}
+	}
+	if q.updateAppByPaidStmt != nil {
+		if cerr := q.updateAppByPaidStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateAppByPaidStmt: %w", cerr)
+		}
+	}
+	if q.updateAppEnvsStmt != nil {
+		if cerr := q.updateAppEnvsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateAppEnvsStmt: %w", cerr)
+		}
+	}
+	if q.updateBankAccountStmt != nil {
+		if cerr := q.updateBankAccountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateBankAccountStmt: %w", cerr)
+		}
+	}
+	if q.updateBankAccountAllStmt != nil {
+		if cerr := q.updateBankAccountAllStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateBankAccountAllStmt: %w", cerr)
+		}
+	}
+	if q.updateCompanyBankAccountStmt != nil {
+		if cerr := q.updateCompanyBankAccountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateCompanyBankAccountStmt: %w", cerr)
+		}
+	}
+	if q.updateCompanyByIdStmt != nil {
+		if cerr := q.updateCompanyByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateCompanyByIdStmt: %w", cerr)
+		}
+	}
+	if q.updatePostionByIdStmt != nil {
+		if cerr := q.updatePostionByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updatePostionByIdStmt: %w", cerr)
+		}
+	}
+	if q.updateRoleByIdStmt != nil {
+		if cerr := q.updateRoleByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoleByIdStmt: %w", cerr)
+		}
+	}
+	if q.updateRoleByNameStmt != nil {
+		if cerr := q.updateRoleByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoleByNameStmt: %w", cerr)
+		}
+	}
+	if q.updateSatusByIdStmt != nil {
+		if cerr := q.updateSatusByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateSatusByIdStmt: %w", cerr)
+		}
+	}
+	if q.updateSatusByNameStmt != nil {
+		if cerr := q.updateSatusByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateSatusByNameStmt: %w", cerr)
+		}
+	}
+	if q.updateTeamAppCompanyStmt != nil {
+		if cerr := q.updateTeamAppCompanyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTeamAppCompanyStmt: %w", cerr)
+		}
+	}
+	if q.updateTeamByIdStmt != nil {
+		if cerr := q.updateTeamByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTeamByIdStmt: %w", cerr)
+		}
+	}
+	if q.updateTeamByNameStmt != nil {
+		if cerr := q.updateTeamByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTeamByNameStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -439,12 +591,15 @@ type Queries struct {
 	createBankAccountBasicStmt    *sql.Stmt
 	createBusinessLogsStmt        *sql.Stmt
 	createCompanyBasicStmt        *sql.Stmt
+	createCredsStmt               *sql.Stmt
 	createIndustryBasicStmt       *sql.Stmt
 	createPositionBasicStmt       *sql.Stmt
 	createRoleBasicStmt           *sql.Stmt
 	createStatusBasicStmt         *sql.Stmt
 	createTeamBasicStmt           *sql.Stmt
 	createTeamsAppsCompaniesStmt  *sql.Stmt
+	createUserBasicStmt           *sql.Stmt
+	createUserInfoBasicStmt       *sql.Stmt
 	deleteAppStmt                 *sql.Stmt
 	deleteBankAccountStmt         *sql.Stmt
 	deleteBankAccountAllStmt      *sql.Stmt
@@ -480,6 +635,22 @@ type Queries struct {
 	getTeamsStmt                  *sql.Stmt
 	getTeamsAppsCompaniesStmt     *sql.Stmt
 	getTeamsAppsCompaniesByIdStmt *sql.Stmt
+	updateAppByIdStmt             *sql.Stmt
+	updateAppByNameStmt           *sql.Stmt
+	updateAppByPaidStmt           *sql.Stmt
+	updateAppEnvsStmt             *sql.Stmt
+	updateBankAccountStmt         *sql.Stmt
+	updateBankAccountAllStmt      *sql.Stmt
+	updateCompanyBankAccountStmt  *sql.Stmt
+	updateCompanyByIdStmt         *sql.Stmt
+	updatePostionByIdStmt         *sql.Stmt
+	updateRoleByIdStmt            *sql.Stmt
+	updateRoleByNameStmt          *sql.Stmt
+	updateSatusByIdStmt           *sql.Stmt
+	updateSatusByNameStmt         *sql.Stmt
+	updateTeamAppCompanyStmt      *sql.Stmt
+	updateTeamByIdStmt            *sql.Stmt
+	updateTeamByNameStmt          *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -491,12 +662,15 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createBankAccountBasicStmt:    q.createBankAccountBasicStmt,
 		createBusinessLogsStmt:        q.createBusinessLogsStmt,
 		createCompanyBasicStmt:        q.createCompanyBasicStmt,
+		createCredsStmt:               q.createCredsStmt,
 		createIndustryBasicStmt:       q.createIndustryBasicStmt,
 		createPositionBasicStmt:       q.createPositionBasicStmt,
 		createRoleBasicStmt:           q.createRoleBasicStmt,
 		createStatusBasicStmt:         q.createStatusBasicStmt,
 		createTeamBasicStmt:           q.createTeamBasicStmt,
 		createTeamsAppsCompaniesStmt:  q.createTeamsAppsCompaniesStmt,
+		createUserBasicStmt:           q.createUserBasicStmt,
+		createUserInfoBasicStmt:       q.createUserInfoBasicStmt,
 		deleteAppStmt:                 q.deleteAppStmt,
 		deleteBankAccountStmt:         q.deleteBankAccountStmt,
 		deleteBankAccountAllStmt:      q.deleteBankAccountAllStmt,
@@ -532,5 +706,21 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getTeamsStmt:                  q.getTeamsStmt,
 		getTeamsAppsCompaniesStmt:     q.getTeamsAppsCompaniesStmt,
 		getTeamsAppsCompaniesByIdStmt: q.getTeamsAppsCompaniesByIdStmt,
+		updateAppByIdStmt:             q.updateAppByIdStmt,
+		updateAppByNameStmt:           q.updateAppByNameStmt,
+		updateAppByPaidStmt:           q.updateAppByPaidStmt,
+		updateAppEnvsStmt:             q.updateAppEnvsStmt,
+		updateBankAccountStmt:         q.updateBankAccountStmt,
+		updateBankAccountAllStmt:      q.updateBankAccountAllStmt,
+		updateCompanyBankAccountStmt:  q.updateCompanyBankAccountStmt,
+		updateCompanyByIdStmt:         q.updateCompanyByIdStmt,
+		updatePostionByIdStmt:         q.updatePostionByIdStmt,
+		updateRoleByIdStmt:            q.updateRoleByIdStmt,
+		updateRoleByNameStmt:          q.updateRoleByNameStmt,
+		updateSatusByIdStmt:           q.updateSatusByIdStmt,
+		updateSatusByNameStmt:         q.updateSatusByNameStmt,
+		updateTeamAppCompanyStmt:      q.updateTeamAppCompanyStmt,
+		updateTeamByIdStmt:            q.updateTeamByIdStmt,
+		updateTeamByNameStmt:          q.updateTeamByNameStmt,
 	}
 }

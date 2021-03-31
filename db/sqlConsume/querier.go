@@ -15,12 +15,15 @@ type Querier interface {
 	CreateBankAccountBasic(ctx context.Context, arg CreateBankAccountBasicParams) (int64, error)
 	CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogsParams) (BusinessLog, error)
 	CreateCompanyBasic(ctx context.Context, arg CreateCompanyBasicParams) (CreateCompanyBasicRow, error)
+	CreateCreds(ctx context.Context, arg CreateCredsParams) (CreateCredsRow, error)
 	CreateIndustryBasic(ctx context.Context, arg CreateIndustryBasicParams) (CreateIndustryBasicRow, error)
 	CreatePositionBasic(ctx context.Context, arg CreatePositionBasicParams) (CreatePositionBasicRow, error)
 	CreateRoleBasic(ctx context.Context, arg CreateRoleBasicParams) (CreateRoleBasicRow, error)
 	CreateStatusBasic(ctx context.Context, arg CreateStatusBasicParams) (CreateStatusBasicRow, error)
 	CreateTeamBasic(ctx context.Context, arg CreateTeamBasicParams) (CreateTeamBasicRow, error)
 	CreateTeamsAppsCompanies(ctx context.Context, arg CreateTeamsAppsCompaniesParams) (CreateTeamsAppsCompaniesRow, error)
+	CreateUserBasic(ctx context.Context, arg CreateUserBasicParams) (CreateUserBasicRow, error)
+	CreateUserInfoBasic(ctx context.Context, arg CreateUserInfoBasicParams) (CreateUserInfoBasicRow, error)
 	DeleteApp(ctx context.Context, appID int64) error
 	DeleteBankAccount(ctx context.Context, bankAccountID int64) error
 	DeleteBankAccountAll(ctx context.Context, bankAccountAllID uuid.UUID) error
@@ -56,6 +59,22 @@ type Querier interface {
 	GetTeams(ctx context.Context, arg GetTeamsParams) ([]GetTeamsRow, error)
 	GetTeamsAppsCompanies(ctx context.Context, arg GetTeamsAppsCompaniesParams) ([]GetTeamsAppsCompaniesRow, error)
 	GetTeamsAppsCompaniesById(ctx context.Context, teamAppCompanyID int64) (GetTeamsAppsCompaniesByIdRow, error)
+	UpdateAppById(ctx context.Context, arg UpdateAppByIdParams) (UpdateAppByIdRow, error)
+	UpdateAppByName(ctx context.Context, arg UpdateAppByNameParams) (UpdateAppByNameRow, error)
+	UpdateAppByPaid(ctx context.Context, arg UpdateAppByPaidParams) (UpdateAppByPaidRow, error)
+	UpdateAppEnvs(ctx context.Context, arg UpdateAppEnvsParams) (UpdateAppEnvsRow, error)
+	UpdateBankAccount(ctx context.Context, arg UpdateBankAccountParams) error
+	UpdateBankAccountAll(ctx context.Context, arg UpdateBankAccountAllParams) error
+	UpdateCompanyBankAccount(ctx context.Context, arg UpdateCompanyBankAccountParams) (UpdateCompanyBankAccountRow, error)
+	UpdateCompanyById(ctx context.Context, arg UpdateCompanyByIdParams) (UpdateCompanyByIdRow, error)
+	UpdatePostionById(ctx context.Context, arg UpdatePostionByIdParams) (UpdatePostionByIdRow, error)
+	UpdateRoleById(ctx context.Context, arg UpdateRoleByIdParams) (UpdateRoleByIdRow, error)
+	UpdateRoleByName(ctx context.Context, arg UpdateRoleByNameParams) (UpdateRoleByNameRow, error)
+	UpdateSatusById(ctx context.Context, arg UpdateSatusByIdParams) (UpdateSatusByIdRow, error)
+	UpdateSatusByName(ctx context.Context, arg UpdateSatusByNameParams) (UpdateSatusByNameRow, error)
+	UpdateTeamAppCompany(ctx context.Context, arg UpdateTeamAppCompanyParams) (UpdateTeamAppCompanyRow, error)
+	UpdateTeamById(ctx context.Context, arg UpdateTeamByIdParams) (UpdateTeamByIdRow, error)
+	UpdateTeamByName(ctx context.Context, arg UpdateTeamByNameParams) (UpdateTeamByNameRow, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -13,9 +13,9 @@ const deleteApp = `-- name: DeleteApp :exec
 UPDATE
   apps 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  app_id = $1
+  app_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteApp(ctx context.Context, appID int64) error {
@@ -27,9 +27,9 @@ const deleteBankAccount = `-- name: DeleteBankAccount :exec
 UPDATE
   bank_account
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  bank_account_id = $1
+  bank_account_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteBankAccount(ctx context.Context, bankAccountID int64) error {
@@ -41,9 +41,9 @@ const deleteBankAccountAll = `-- name: DeleteBankAccountAll :exec
 UPDATE
   bank_account_all
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  bank_account_all_id = $1
+  bank_account_all_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteBankAccountAll(ctx context.Context, bankAccountAllID uuid.UUID) error {
@@ -55,9 +55,9 @@ const deleteCompany = `-- name: DeleteCompany :exec
 UPDATE
   companies
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  company_id = $1
+  company_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteCompany(ctx context.Context, companyID int32) error {
@@ -69,7 +69,7 @@ const deleteIndustry = `-- name: DeleteIndustry :exec
 UPDATE
   industries 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   industry_id = $1
 `
@@ -83,9 +83,9 @@ const deletePosition = `-- name: DeletePosition :exec
 UPDATE
   positions 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  position_id = $1
+  position_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeletePosition(ctx context.Context, positionID int64) error {
@@ -97,7 +97,7 @@ const deleteRole = `-- name: DeleteRole :exec
 UPDATE
   roles 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   role_id = $1
 `
@@ -111,7 +111,7 @@ const deleteStatus = `-- name: DeleteStatus :exec
 UPDATE
   industries 
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
   industry_id = $1
 `
@@ -125,9 +125,9 @@ const deleteTeam = `-- name: DeleteTeam :exec
 UPDATE
   teams
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  team_id = $1
+  team_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteTeam(ctx context.Context, teamID int64) error {
@@ -139,9 +139,9 @@ const deleteTeamsAppsCompanies = `-- name: DeleteTeamsAppsCompanies :exec
 UPDATE
   teams_apps_companies
 SET 
-  (deleted_at, deleted) = (now(), true)
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  team_app_company_id = $1
+  team_app_company_id = $1 AND deleted = false
 `
 
 func (q *Queries) DeleteTeamsAppsCompanies(ctx context.Context, teamAppCompanyID int64) error {
