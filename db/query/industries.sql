@@ -36,3 +36,11 @@ FROM
   industries 
 WHERE 
   industry_id = $1 AND deleted = false;
+
+-- name: DeleteIndustry :exec
+UPDATE
+  industries 
+SET 
+  (updated_at, deleted_at, deleted) = (now(), now(), true)
+WHERE
+  industry_id = $1;

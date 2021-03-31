@@ -115,9 +115,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getBanAccountAllByIdStmt, err = db.PrepareContext(ctx, getBanAccountAllById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetBanAccountAllById: %w", err)
 	}
-	if q.getBankAccountAllBasicStmt, err = db.PrepareContext(ctx, getBankAccountAllBasic); err != nil {
-		return nil, fmt.Errorf("error preparing query GetBankAccountAllBasic: %w", err)
-	}
 	if q.getCompaniesStmt, err = db.PrepareContext(ctx, getCompanies); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCompanies: %w", err)
 	}
@@ -219,6 +216,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateCompanyByIdStmt, err = db.PrepareContext(ctx, updateCompanyById); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCompanyById: %w", err)
+	}
+	if q.updateIndustryByIdStmt, err = db.PrepareContext(ctx, updateIndustryById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateIndustryById: %w", err)
 	}
 	if q.updatePostionByIdStmt, err = db.PrepareContext(ctx, updatePostionById); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePostionById: %w", err)
@@ -404,11 +404,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getBanAccountAllByIdStmt: %w", cerr)
 		}
 	}
-	if q.getBankAccountAllBasicStmt != nil {
-		if cerr := q.getBankAccountAllBasicStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getBankAccountAllBasicStmt: %w", cerr)
-		}
-	}
 	if q.getCompaniesStmt != nil {
 		if cerr := q.getCompaniesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCompaniesStmt: %w", cerr)
@@ -579,6 +574,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateCompanyByIdStmt: %w", cerr)
 		}
 	}
+	if q.updateIndustryByIdStmt != nil {
+		if cerr := q.updateIndustryByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateIndustryByIdStmt: %w", cerr)
+		}
+	}
 	if q.updatePostionByIdStmt != nil {
 		if cerr := q.updatePostionByIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePostionByIdStmt: %w", cerr)
@@ -633,7 +633,7 @@ func (q *Queries) exec(ctx context.Context, stmt *sql.Stmt, query string, args .
 	}
 }
 
-func (q *Queries) query(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (*sql.Rows, error) {        
+func (q *Queries) query(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (*sql.Rows, error) {
 	switch {
 	case stmt != nil && q.tx != nil:
 		return q.tx.StmtContext(ctx, stmt).QueryContext(ctx, args...)
@@ -689,7 +689,6 @@ type Queries struct {
 	getAppByNameStmt                         *sql.Stmt
 	getAppsStmt                              *sql.Stmt
 	getBanAccountAllByIdStmt                 *sql.Stmt
-	getBankAccountAllBasicStmt               *sql.Stmt
 	getCompaniesStmt                         *sql.Stmt
 	getCompanyByIdStmt                       *sql.Stmt
 	getCompanyByNameStmt                     *sql.Stmt
@@ -724,6 +723,7 @@ type Queries struct {
 	updateBankAccountAllStmt                 *sql.Stmt
 	updateCompanyBankAccountStmt             *sql.Stmt
 	updateCompanyByIdStmt                    *sql.Stmt
+	updateIndustryByIdStmt                   *sql.Stmt
 	updatePostionByIdStmt                    *sql.Stmt
 	updateRoleByIdStmt                       *sql.Stmt
 	updateRoleByNameStmt                     *sql.Stmt
@@ -769,7 +769,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getAppByNameStmt:                         q.getAppByNameStmt,
 		getAppsStmt:                              q.getAppsStmt,
 		getBanAccountAllByIdStmt:                 q.getBanAccountAllByIdStmt,
-		getBankAccountAllBasicStmt:               q.getBankAccountAllBasicStmt,
 		getCompaniesStmt:                         q.getCompaniesStmt,
 		getCompanyByIdStmt:                       q.getCompanyByIdStmt,
 		getCompanyByNameStmt:                     q.getCompanyByNameStmt,
@@ -804,6 +803,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateBankAccountAllStmt:                 q.updateBankAccountAllStmt,
 		updateCompanyBankAccountStmt:             q.updateCompanyBankAccountStmt,
 		updateCompanyByIdStmt:                    q.updateCompanyByIdStmt,
+		updateIndustryByIdStmt:                   q.updateIndustryByIdStmt,
 		updatePostionByIdStmt:                    q.updatePostionByIdStmt,
 		updateRoleByIdStmt:                       q.updateRoleByIdStmt,
 		updateRoleByNameStmt:                     q.updateRoleByNameStmt,

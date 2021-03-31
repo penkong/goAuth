@@ -1,5 +1,3 @@
-
-
 -- name: CreateBusinessLogs :exec
 INSERT INTO 
   business_logs(event, device, os, ip, agent, position_id, company_id, role_id, team_id, app_id, creator)
