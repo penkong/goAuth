@@ -100,11 +100,11 @@ func (q *Queries) CreateBankAccountBasic(ctx context.Context, arg CreateBankAcco
 	return bank_account_id, err
 }
 
-const createBusinessLogs = `-- name: CreateBusinessLogs :one
+const createBusinessLogs = `-- name: CreateBusinessLogs :exec
 INSERT INTO 
   business_logs(event, device, os, ip, agent, position_id, company_id, role_id, team_id, app_id, creator)
 VALUES 
-  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING business_log_id, event, device, os, ip, agent, position_id, company_id, role_id, team_id, app_id, creator, created_at
+  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 `
 
 type CreateBusinessLogsParams struct {
@@ -121,8 +121,8 @@ type CreateBusinessLogsParams struct {
 	Creator    uuid.UUID     `db:"creator" json:"creator"`
 }
 
-func (q *Queries) CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogsParams) (BusinessLog, error) {
-	row := q.queryRow(ctx, q.createBusinessLogsStmt, createBusinessLogs,
+func (q *Queries) CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogsParams) error {
+	_, err := q.exec(ctx, q.createBusinessLogsStmt, createBusinessLogs,
 		arg.Event,
 		arg.Device,
 		arg.Os,
@@ -135,23 +135,7 @@ func (q *Queries) CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogs
 		arg.AppID,
 		arg.Creator,
 	)
-	var i BusinessLog
-	err := row.Scan(
-		&i.BusinessLogID,
-		&i.Event,
-		&i.Device,
-		&i.Os,
-		&i.Ip,
-		&i.Agent,
-		&i.PositionID,
-		&i.CompanyID,
-		&i.RoleID,
-		&i.TeamID,
-		&i.AppID,
-		&i.Creator,
-		&i.CreatedAt,
-	)
-	return i, err
+	return err
 }
 
 const createCompanyBasic = `-- name: CreateCompanyBasic :one

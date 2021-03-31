@@ -225,7 +225,7 @@ CREATE TABLE "bank_account_all" (
 
 
 CREATE TABLE "users_roles_apps_companies" (
-  "user_role_id" BIGSERIAL PRIMARY KEY,
+  "user_role_app_company_id" BIGSERIAL PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "role_id" bigint NOT NULL DEFAULT 3,
   "app_id" bigint NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE "users_roles_apps_companies" (
 );
 
 CREATE TABLE "users_roles_apps_positions_teams_companies" (
-  "user_team" BIGSERIAL PRIMARY KEY,
+  "user_role_app_position_team_company_id" BIGSERIAL PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "role_id" bigint NOT NULL DEFAULT 3,
   "app_id" bigint NOT NULL,

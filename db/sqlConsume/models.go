@@ -250,31 +250,31 @@ type UsersInfo struct {
 }
 
 type UsersRolesAppsCompany struct {
-	UserRoleID int64        `db:"user_role_id" json:"user_role_id"`
-	UserID     uuid.UUID    `db:"user_id" json:"user_id"`
-	RoleID     int64        `db:"role_id" json:"role_id"`
-	AppID      int64        `db:"app_id" json:"app_id"`
-	CompanyID  int64        `db:"company_id" json:"company_id"`
-	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
+	UserRoleAppCompanyID int64        `db:"user_role_app_company_id" json:"user_role_app_company_id"`
+	UserID               uuid.UUID    `db:"user_id" json:"user_id"`
+	RoleID               int64        `db:"role_id" json:"role_id"`
+	AppID                int64        `db:"app_id" json:"app_id"`
+	CompanyID            int64        `db:"company_id" json:"company_id"`
+	CreatedAt            time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt            sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt            sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	Deleted              sql.NullBool `db:"deleted" json:"deleted"`
 	// use for handle hybrid concurrncy
 	Rv int32 `db:"rv" json:"rv"`
 }
 
 type UsersRolesAppsPositionsTeamsCompany struct {
-	UserTeam   int64        `db:"user_team" json:"user_team"`
-	UserID     uuid.UUID    `db:"user_id" json:"user_id"`
-	RoleID     int64        `db:"role_id" json:"role_id"`
-	AppID      int64        `db:"app_id" json:"app_id"`
-	PositionID int64        `db:"position_id" json:"position_id"`
-	TeamID     int64        `db:"team_id" json:"team_id"`
-	CompanyID  int64        `db:"company_id" json:"company_id"`
-	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
-	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
-	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
+	UserRoleAppPositionTeamCompanyID int64        `db:"user_role_app_position_team_company_id" json:"user_role_app_position_team_company_id"`
+	UserID                           uuid.UUID    `db:"user_id" json:"user_id"`
+	RoleID                           int64        `db:"role_id" json:"role_id"`
+	AppID                            int64        `db:"app_id" json:"app_id"`
+	PositionID                       int64        `db:"position_id" json:"position_id"`
+	TeamID                           int64        `db:"team_id" json:"team_id"`
+	CompanyID                        int64        `db:"company_id" json:"company_id"`
+	CreatedAt                        time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt                        sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt                        sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	Deleted                          sql.NullBool `db:"deleted" json:"deleted"`
 	// use for handle hybrid concurrncy
 	Rv int32 `db:"rv" json:"rv"`
 }

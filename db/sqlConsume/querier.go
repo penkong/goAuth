@@ -13,7 +13,7 @@ type Querier interface {
 	CreateAppBasic(ctx context.Context, arg CreateAppBasicParams) (CreateAppBasicRow, error)
 	CreateBankAccountAllBasic(ctx context.Context, arg CreateBankAccountAllBasicParams) error
 	CreateBankAccountBasic(ctx context.Context, arg CreateBankAccountBasicParams) (int64, error)
-	CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogsParams) (BusinessLog, error)
+	CreateBusinessLogs(ctx context.Context, arg CreateBusinessLogsParams) error
 	CreateCompanyBasic(ctx context.Context, arg CreateCompanyBasicParams) (CreateCompanyBasicRow, error)
 	CreateCreds(ctx context.Context, arg CreateCredsParams) (CreateCredsRow, error)
 	CreateIndustryBasic(ctx context.Context, arg CreateIndustryBasicParams) (CreateIndustryBasicRow, error)
@@ -24,6 +24,9 @@ type Querier interface {
 	CreateTeamsAppsCompanies(ctx context.Context, arg CreateTeamsAppsCompaniesParams) (CreateTeamsAppsCompaniesRow, error)
 	CreateUserBasic(ctx context.Context, arg CreateUserBasicParams) (CreateUserBasicRow, error)
 	CreateUserInfoBasic(ctx context.Context, arg CreateUserInfoBasicParams) (CreateUserInfoBasicRow, error)
+	CreateUserLog(ctx context.Context, arg CreateUserLogParams) error
+	CreateUserRoleAppCompany(ctx context.Context, arg CreateUserRoleAppCompanyParams) error
+	CreateUserRoleAppPositionTeamCompany(ctx context.Context, arg CreateUserRoleAppPositionTeamCompanyParams) error
 	DeleteApp(ctx context.Context, appID int64) error
 	DeleteBankAccount(ctx context.Context, bankAccountID int64) error
 	DeleteBankAccountAll(ctx context.Context, bankAccountAllID uuid.UUID) error

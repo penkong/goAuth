@@ -64,6 +64,15 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUserInfoBasicStmt, err = db.PrepareContext(ctx, createUserInfoBasic); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUserInfoBasic: %w", err)
 	}
+	if q.createUserLogStmt, err = db.PrepareContext(ctx, createUserLog); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserLog: %w", err)
+	}
+	if q.createUserRoleAppCompanyStmt, err = db.PrepareContext(ctx, createUserRoleAppCompany); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserRoleAppCompany: %w", err)
+	}
+	if q.createUserRoleAppPositionTeamCompanyStmt, err = db.PrepareContext(ctx, createUserRoleAppPositionTeamCompany); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserRoleAppPositionTeamCompany: %w", err)
+	}
 	if q.deleteAppStmt, err = db.PrepareContext(ctx, deleteApp); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteApp: %w", err)
 	}
@@ -290,6 +299,21 @@ func (q *Queries) Close() error {
 	if q.createUserInfoBasicStmt != nil {
 		if cerr := q.createUserInfoBasicStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserInfoBasicStmt: %w", cerr)
+		}
+	}
+	if q.createUserLogStmt != nil {
+		if cerr := q.createUserLogStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserLogStmt: %w", cerr)
+		}
+	}
+	if q.createUserRoleAppCompanyStmt != nil {
+		if cerr := q.createUserRoleAppCompanyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserRoleAppCompanyStmt: %w", cerr)
+		}
+	}
+	if q.createUserRoleAppPositionTeamCompanyStmt != nil {
+		if cerr := q.createUserRoleAppPositionTeamCompanyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserRoleAppPositionTeamCompanyStmt: %w", cerr)
 		}
 	}
 	if q.deleteAppStmt != nil {
@@ -584,143 +608,149 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                            DBTX
-	tx                            *sql.Tx
-	createAppBasicStmt            *sql.Stmt
-	createBankAccountAllBasicStmt *sql.Stmt
-	createBankAccountBasicStmt    *sql.Stmt
-	createBusinessLogsStmt        *sql.Stmt
-	createCompanyBasicStmt        *sql.Stmt
-	createCredsStmt               *sql.Stmt
-	createIndustryBasicStmt       *sql.Stmt
-	createPositionBasicStmt       *sql.Stmt
-	createRoleBasicStmt           *sql.Stmt
-	createStatusBasicStmt         *sql.Stmt
-	createTeamBasicStmt           *sql.Stmt
-	createTeamsAppsCompaniesStmt  *sql.Stmt
-	createUserBasicStmt           *sql.Stmt
-	createUserInfoBasicStmt       *sql.Stmt
-	deleteAppStmt                 *sql.Stmt
-	deleteBankAccountStmt         *sql.Stmt
-	deleteBankAccountAllStmt      *sql.Stmt
-	deleteCompanyStmt             *sql.Stmt
-	deleteIndustryStmt            *sql.Stmt
-	deletePositionStmt            *sql.Stmt
-	deleteRoleStmt                *sql.Stmt
-	deleteStatusStmt              *sql.Stmt
-	deleteTeamStmt                *sql.Stmt
-	deleteTeamsAppsCompaniesStmt  *sql.Stmt
-	getAppByIdStmt                *sql.Stmt
-	getAppByNameStmt              *sql.Stmt
-	getAppsStmt                   *sql.Stmt
-	getBanAccountAllByIdStmt      *sql.Stmt
-	getCompaniesStmt              *sql.Stmt
-	getCompanyByIdStmt            *sql.Stmt
-	getCompanyByNameStmt          *sql.Stmt
-	getIndustriesStmt             *sql.Stmt
-	getIndustryByIdStmt           *sql.Stmt
-	getIndustryByNameStmt         *sql.Stmt
-	getPositionByDepartmentStmt   *sql.Stmt
-	getPositionByIdStmt           *sql.Stmt
-	getPositionByNameStmt         *sql.Stmt
-	getPositionsStmt              *sql.Stmt
-	getRoleByIdStmt               *sql.Stmt
-	getRoleByNameStmt             *sql.Stmt
-	getRolesStmt                  *sql.Stmt
-	getStatusByIdStmt             *sql.Stmt
-	getStatusByNameStmt           *sql.Stmt
-	getStatusesStmt               *sql.Stmt
-	getTeamByIdStmt               *sql.Stmt
-	getTeamByNameStmt             *sql.Stmt
-	getTeamsStmt                  *sql.Stmt
-	getTeamsAppsCompaniesStmt     *sql.Stmt
-	getTeamsAppsCompaniesByIdStmt *sql.Stmt
-	updateAppByIdStmt             *sql.Stmt
-	updateAppByNameStmt           *sql.Stmt
-	updateAppByPaidStmt           *sql.Stmt
-	updateAppEnvsStmt             *sql.Stmt
-	updateBankAccountStmt         *sql.Stmt
-	updateBankAccountAllStmt      *sql.Stmt
-	updateCompanyBankAccountStmt  *sql.Stmt
-	updateCompanyByIdStmt         *sql.Stmt
-	updatePostionByIdStmt         *sql.Stmt
-	updateRoleByIdStmt            *sql.Stmt
-	updateRoleByNameStmt          *sql.Stmt
-	updateSatusByIdStmt           *sql.Stmt
-	updateSatusByNameStmt         *sql.Stmt
-	updateTeamAppCompanyStmt      *sql.Stmt
-	updateTeamByIdStmt            *sql.Stmt
-	updateTeamByNameStmt          *sql.Stmt
+	db                                       DBTX
+	tx                                       *sql.Tx
+	createAppBasicStmt                       *sql.Stmt
+	createBankAccountAllBasicStmt            *sql.Stmt
+	createBankAccountBasicStmt               *sql.Stmt
+	createBusinessLogsStmt                   *sql.Stmt
+	createCompanyBasicStmt                   *sql.Stmt
+	createCredsStmt                          *sql.Stmt
+	createIndustryBasicStmt                  *sql.Stmt
+	createPositionBasicStmt                  *sql.Stmt
+	createRoleBasicStmt                      *sql.Stmt
+	createStatusBasicStmt                    *sql.Stmt
+	createTeamBasicStmt                      *sql.Stmt
+	createTeamsAppsCompaniesStmt             *sql.Stmt
+	createUserBasicStmt                      *sql.Stmt
+	createUserInfoBasicStmt                  *sql.Stmt
+	createUserLogStmt                        *sql.Stmt
+	createUserRoleAppCompanyStmt             *sql.Stmt
+	createUserRoleAppPositionTeamCompanyStmt *sql.Stmt
+	deleteAppStmt                            *sql.Stmt
+	deleteBankAccountStmt                    *sql.Stmt
+	deleteBankAccountAllStmt                 *sql.Stmt
+	deleteCompanyStmt                        *sql.Stmt
+	deleteIndustryStmt                       *sql.Stmt
+	deletePositionStmt                       *sql.Stmt
+	deleteRoleStmt                           *sql.Stmt
+	deleteStatusStmt                         *sql.Stmt
+	deleteTeamStmt                           *sql.Stmt
+	deleteTeamsAppsCompaniesStmt             *sql.Stmt
+	getAppByIdStmt                           *sql.Stmt
+	getAppByNameStmt                         *sql.Stmt
+	getAppsStmt                              *sql.Stmt
+	getBanAccountAllByIdStmt                 *sql.Stmt
+	getCompaniesStmt                         *sql.Stmt
+	getCompanyByIdStmt                       *sql.Stmt
+	getCompanyByNameStmt                     *sql.Stmt
+	getIndustriesStmt                        *sql.Stmt
+	getIndustryByIdStmt                      *sql.Stmt
+	getIndustryByNameStmt                    *sql.Stmt
+	getPositionByDepartmentStmt              *sql.Stmt
+	getPositionByIdStmt                      *sql.Stmt
+	getPositionByNameStmt                    *sql.Stmt
+	getPositionsStmt                         *sql.Stmt
+	getRoleByIdStmt                          *sql.Stmt
+	getRoleByNameStmt                        *sql.Stmt
+	getRolesStmt                             *sql.Stmt
+	getStatusByIdStmt                        *sql.Stmt
+	getStatusByNameStmt                      *sql.Stmt
+	getStatusesStmt                          *sql.Stmt
+	getTeamByIdStmt                          *sql.Stmt
+	getTeamByNameStmt                        *sql.Stmt
+	getTeamsStmt                             *sql.Stmt
+	getTeamsAppsCompaniesStmt                *sql.Stmt
+	getTeamsAppsCompaniesByIdStmt            *sql.Stmt
+	updateAppByIdStmt                        *sql.Stmt
+	updateAppByNameStmt                      *sql.Stmt
+	updateAppByPaidStmt                      *sql.Stmt
+	updateAppEnvsStmt                        *sql.Stmt
+	updateBankAccountStmt                    *sql.Stmt
+	updateBankAccountAllStmt                 *sql.Stmt
+	updateCompanyBankAccountStmt             *sql.Stmt
+	updateCompanyByIdStmt                    *sql.Stmt
+	updatePostionByIdStmt                    *sql.Stmt
+	updateRoleByIdStmt                       *sql.Stmt
+	updateRoleByNameStmt                     *sql.Stmt
+	updateSatusByIdStmt                      *sql.Stmt
+	updateSatusByNameStmt                    *sql.Stmt
+	updateTeamAppCompanyStmt                 *sql.Stmt
+	updateTeamByIdStmt                       *sql.Stmt
+	updateTeamByNameStmt                     *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                            tx,
-		tx:                            tx,
-		createAppBasicStmt:            q.createAppBasicStmt,
-		createBankAccountAllBasicStmt: q.createBankAccountAllBasicStmt,
-		createBankAccountBasicStmt:    q.createBankAccountBasicStmt,
-		createBusinessLogsStmt:        q.createBusinessLogsStmt,
-		createCompanyBasicStmt:        q.createCompanyBasicStmt,
-		createCredsStmt:               q.createCredsStmt,
-		createIndustryBasicStmt:       q.createIndustryBasicStmt,
-		createPositionBasicStmt:       q.createPositionBasicStmt,
-		createRoleBasicStmt:           q.createRoleBasicStmt,
-		createStatusBasicStmt:         q.createStatusBasicStmt,
-		createTeamBasicStmt:           q.createTeamBasicStmt,
-		createTeamsAppsCompaniesStmt:  q.createTeamsAppsCompaniesStmt,
-		createUserBasicStmt:           q.createUserBasicStmt,
-		createUserInfoBasicStmt:       q.createUserInfoBasicStmt,
-		deleteAppStmt:                 q.deleteAppStmt,
-		deleteBankAccountStmt:         q.deleteBankAccountStmt,
-		deleteBankAccountAllStmt:      q.deleteBankAccountAllStmt,
-		deleteCompanyStmt:             q.deleteCompanyStmt,
-		deleteIndustryStmt:            q.deleteIndustryStmt,
-		deletePositionStmt:            q.deletePositionStmt,
-		deleteRoleStmt:                q.deleteRoleStmt,
-		deleteStatusStmt:              q.deleteStatusStmt,
-		deleteTeamStmt:                q.deleteTeamStmt,
-		deleteTeamsAppsCompaniesStmt:  q.deleteTeamsAppsCompaniesStmt,
-		getAppByIdStmt:                q.getAppByIdStmt,
-		getAppByNameStmt:              q.getAppByNameStmt,
-		getAppsStmt:                   q.getAppsStmt,
-		getBanAccountAllByIdStmt:      q.getBanAccountAllByIdStmt,
-		getCompaniesStmt:              q.getCompaniesStmt,
-		getCompanyByIdStmt:            q.getCompanyByIdStmt,
-		getCompanyByNameStmt:          q.getCompanyByNameStmt,
-		getIndustriesStmt:             q.getIndustriesStmt,
-		getIndustryByIdStmt:           q.getIndustryByIdStmt,
-		getIndustryByNameStmt:         q.getIndustryByNameStmt,
-		getPositionByDepartmentStmt:   q.getPositionByDepartmentStmt,
-		getPositionByIdStmt:           q.getPositionByIdStmt,
-		getPositionByNameStmt:         q.getPositionByNameStmt,
-		getPositionsStmt:              q.getPositionsStmt,
-		getRoleByIdStmt:               q.getRoleByIdStmt,
-		getRoleByNameStmt:             q.getRoleByNameStmt,
-		getRolesStmt:                  q.getRolesStmt,
-		getStatusByIdStmt:             q.getStatusByIdStmt,
-		getStatusByNameStmt:           q.getStatusByNameStmt,
-		getStatusesStmt:               q.getStatusesStmt,
-		getTeamByIdStmt:               q.getTeamByIdStmt,
-		getTeamByNameStmt:             q.getTeamByNameStmt,
-		getTeamsStmt:                  q.getTeamsStmt,
-		getTeamsAppsCompaniesStmt:     q.getTeamsAppsCompaniesStmt,
-		getTeamsAppsCompaniesByIdStmt: q.getTeamsAppsCompaniesByIdStmt,
-		updateAppByIdStmt:             q.updateAppByIdStmt,
-		updateAppByNameStmt:           q.updateAppByNameStmt,
-		updateAppByPaidStmt:           q.updateAppByPaidStmt,
-		updateAppEnvsStmt:             q.updateAppEnvsStmt,
-		updateBankAccountStmt:         q.updateBankAccountStmt,
-		updateBankAccountAllStmt:      q.updateBankAccountAllStmt,
-		updateCompanyBankAccountStmt:  q.updateCompanyBankAccountStmt,
-		updateCompanyByIdStmt:         q.updateCompanyByIdStmt,
-		updatePostionByIdStmt:         q.updatePostionByIdStmt,
-		updateRoleByIdStmt:            q.updateRoleByIdStmt,
-		updateRoleByNameStmt:          q.updateRoleByNameStmt,
-		updateSatusByIdStmt:           q.updateSatusByIdStmt,
-		updateSatusByNameStmt:         q.updateSatusByNameStmt,
-		updateTeamAppCompanyStmt:      q.updateTeamAppCompanyStmt,
-		updateTeamByIdStmt:            q.updateTeamByIdStmt,
-		updateTeamByNameStmt:          q.updateTeamByNameStmt,
+		db:                                       tx,
+		tx:                                       tx,
+		createAppBasicStmt:                       q.createAppBasicStmt,
+		createBankAccountAllBasicStmt:            q.createBankAccountAllBasicStmt,
+		createBankAccountBasicStmt:               q.createBankAccountBasicStmt,
+		createBusinessLogsStmt:                   q.createBusinessLogsStmt,
+		createCompanyBasicStmt:                   q.createCompanyBasicStmt,
+		createCredsStmt:                          q.createCredsStmt,
+		createIndustryBasicStmt:                  q.createIndustryBasicStmt,
+		createPositionBasicStmt:                  q.createPositionBasicStmt,
+		createRoleBasicStmt:                      q.createRoleBasicStmt,
+		createStatusBasicStmt:                    q.createStatusBasicStmt,
+		createTeamBasicStmt:                      q.createTeamBasicStmt,
+		createTeamsAppsCompaniesStmt:             q.createTeamsAppsCompaniesStmt,
+		createUserBasicStmt:                      q.createUserBasicStmt,
+		createUserInfoBasicStmt:                  q.createUserInfoBasicStmt,
+		createUserLogStmt:                        q.createUserLogStmt,
+		createUserRoleAppCompanyStmt:             q.createUserRoleAppCompanyStmt,
+		createUserRoleAppPositionTeamCompanyStmt: q.createUserRoleAppPositionTeamCompanyStmt,
+		deleteAppStmt:                            q.deleteAppStmt,
+		deleteBankAccountStmt:                    q.deleteBankAccountStmt,
+		deleteBankAccountAllStmt:                 q.deleteBankAccountAllStmt,
+		deleteCompanyStmt:                        q.deleteCompanyStmt,
+		deleteIndustryStmt:                       q.deleteIndustryStmt,
+		deletePositionStmt:                       q.deletePositionStmt,
+		deleteRoleStmt:                           q.deleteRoleStmt,
+		deleteStatusStmt:                         q.deleteStatusStmt,
+		deleteTeamStmt:                           q.deleteTeamStmt,
+		deleteTeamsAppsCompaniesStmt:             q.deleteTeamsAppsCompaniesStmt,
+		getAppByIdStmt:                           q.getAppByIdStmt,
+		getAppByNameStmt:                         q.getAppByNameStmt,
+		getAppsStmt:                              q.getAppsStmt,
+		getBanAccountAllByIdStmt:                 q.getBanAccountAllByIdStmt,
+		getCompaniesStmt:                         q.getCompaniesStmt,
+		getCompanyByIdStmt:                       q.getCompanyByIdStmt,
+		getCompanyByNameStmt:                     q.getCompanyByNameStmt,
+		getIndustriesStmt:                        q.getIndustriesStmt,
+		getIndustryByIdStmt:                      q.getIndustryByIdStmt,
+		getIndustryByNameStmt:                    q.getIndustryByNameStmt,
+		getPositionByDepartmentStmt:              q.getPositionByDepartmentStmt,
+		getPositionByIdStmt:                      q.getPositionByIdStmt,
+		getPositionByNameStmt:                    q.getPositionByNameStmt,
+		getPositionsStmt:                         q.getPositionsStmt,
+		getRoleByIdStmt:                          q.getRoleByIdStmt,
+		getRoleByNameStmt:                        q.getRoleByNameStmt,
+		getRolesStmt:                             q.getRolesStmt,
+		getStatusByIdStmt:                        q.getStatusByIdStmt,
+		getStatusByNameStmt:                      q.getStatusByNameStmt,
+		getStatusesStmt:                          q.getStatusesStmt,
+		getTeamByIdStmt:                          q.getTeamByIdStmt,
+		getTeamByNameStmt:                        q.getTeamByNameStmt,
+		getTeamsStmt:                             q.getTeamsStmt,
+		getTeamsAppsCompaniesStmt:                q.getTeamsAppsCompaniesStmt,
+		getTeamsAppsCompaniesByIdStmt:            q.getTeamsAppsCompaniesByIdStmt,
+		updateAppByIdStmt:                        q.updateAppByIdStmt,
+		updateAppByNameStmt:                      q.updateAppByNameStmt,
+		updateAppByPaidStmt:                      q.updateAppByPaidStmt,
+		updateAppEnvsStmt:                        q.updateAppEnvsStmt,
+		updateBankAccountStmt:                    q.updateBankAccountStmt,
+		updateBankAccountAllStmt:                 q.updateBankAccountAllStmt,
+		updateCompanyBankAccountStmt:             q.updateCompanyBankAccountStmt,
+		updateCompanyByIdStmt:                    q.updateCompanyByIdStmt,
+		updatePostionByIdStmt:                    q.updatePostionByIdStmt,
+		updateRoleByIdStmt:                       q.updateRoleByIdStmt,
+		updateRoleByNameStmt:                     q.updateRoleByNameStmt,
+		updateSatusByIdStmt:                      q.updateSatusByIdStmt,
+		updateSatusByNameStmt:                    q.updateSatusByNameStmt,
+		updateTeamAppCompanyStmt:                 q.updateTeamAppCompanyStmt,
+		updateTeamByIdStmt:                       q.updateTeamByIdStmt,
+		updateTeamByNameStmt:                     q.updateTeamByNameStmt,
 	}
 }
