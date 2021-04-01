@@ -18,7 +18,7 @@ CREATE TABLE "industries" (
   "updated_at" timestamptz,
   "deleted_at" timestamptz,
   "deleted" boolean DEFAULT false,
-  "rv" integer DEFAULT 0,
+  "rv" integer DEFAULT 0 NOT NULL,
   CHECK(created_at < updated_at)
 );
 

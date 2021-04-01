@@ -75,7 +75,7 @@ type Querier interface {
 	UpdateBankAccountAll(ctx context.Context, arg UpdateBankAccountAllParams) error
 	UpdateCompanyBankAccount(ctx context.Context, arg UpdateCompanyBankAccountParams) (UpdateCompanyBankAccountRow, error)
 	UpdateCompanyById(ctx context.Context, arg UpdateCompanyByIdParams) (UpdateCompanyByIdRow, error)
-	UpdateIndustryById(ctx context.Context, industryID int64) (UpdateIndustryByIdRow, error)
+	UpdateIndustryById(ctx context.Context, arg UpdateIndustryByIdParams) (UpdateIndustryByIdRow, error)
 	UpdatePostionById(ctx context.Context, arg UpdatePostionByIdParams) (UpdatePostionByIdRow, error)
 	UpdateRoleById(ctx context.Context, arg UpdateRoleByIdParams) (UpdateRoleByIdRow, error)
 	UpdateRoleByName(ctx context.Context, arg UpdateRoleByNameParams) (UpdateRoleByNameRow, error)

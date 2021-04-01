@@ -17,9 +17,9 @@ VALUES
 `
 
 type CreateIndustryBasicParams struct {
-	Industry string        `db:"industry" json:"industry"`
-	HowClean int32         `db:"how_clean" json:"how_clean"`
-	Rv       sql.NullInt32 `db:"rv" json:"rv"`
+	Industry string `db:"industry" json:"industry"`
+	HowClean int32  `db:"how_clean" json:"how_clean"`
+	Rv       int32  `db:"rv" json:"rv"`
 }
 
 type CreateIndustryBasicRow struct {
@@ -176,30 +176,34 @@ func (q *Queries) GetIndustryByName(ctx context.Context, industry string) (GetIn
 }
 
 const updateIndustryById = `-- name: UpdateIndustryById :one
-SELECT 
-  industry_id, industry, how_clean, created_at, updated_at 
-FROM 
-  industries 
+UPDATE
+  industries
+SET
+  (industry, how_clean, updated_at) = ($2, $3, now())
 WHERE 
-  industry_id = $1 AND deleted = false
+  industry_id = $1 AND deleted = false RETURNING industry_id, industry, how_clean, updated_at
 `
+
+type UpdateIndustryByIdParams struct {
+	IndustryID int64  `db:"industry_id" json:"industry_id"`
+	Industry   string `db:"industry" json:"industry"`
+	HowClean   int32  `db:"how_clean" json:"how_clean"`
+}
 
 type UpdateIndustryByIdRow struct {
 	IndustryID int64        `db:"industry_id" json:"industry_id"`
 	Industry   string       `db:"industry" json:"industry"`
 	HowClean   int32        `db:"how_clean" json:"how_clean"`
-	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
-func (q *Queries) UpdateIndustryById(ctx context.Context, industryID int64) (UpdateIndustryByIdRow, error) {
-	row := q.queryRow(ctx, q.updateIndustryByIdStmt, updateIndustryById, industryID)
+func (q *Queries) UpdateIndustryById(ctx context.Context, arg UpdateIndustryByIdParams) (UpdateIndustryByIdRow, error) {
+	row := q.queryRow(ctx, q.updateIndustryByIdStmt, updateIndustryById, arg.IndustryID, arg.Industry, arg.HowClean)
 	var i UpdateIndustryByIdRow
 	err := row.Scan(
 		&i.IndustryID,
 		&i.Industry,
 		&i.HowClean,
-		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err

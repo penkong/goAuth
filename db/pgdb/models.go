@@ -122,7 +122,7 @@ type Industry struct {
 	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
 	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
 	// use for handle hybrid concurrncy
-	Rv sql.NullInt32 `db:"rv" json:"rv"`
+	Rv int32 `db:"rv" json:"rv"`
 }
 
 type Position struct {

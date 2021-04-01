@@ -30,12 +30,12 @@ WHERE
 LIMIT $1 OFFSET $2;
 
 -- name: UpdateIndustryById :one
-SELECT 
-  industry_id, industry, how_clean, created_at, updated_at 
-FROM 
-  industries 
+UPDATE
+  industries
+SET
+  (industry, how_clean, updated_at) = ($2, $3, now())
 WHERE 
-  industry_id = $1 AND deleted = false;
+  industry_id = $1 AND deleted = false RETURNING industry_id, industry, how_clean, updated_at;
 
 -- name: DeleteIndustry :one
 UPDATE
