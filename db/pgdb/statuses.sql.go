@@ -13,43 +13,52 @@ const createStatusBasic = `-- name: CreateStatusBasic :one
 INSERT INTO 
   statuses(status, rv)
 VALUES 
-  ($1, $2) RETURNING status_id, status
+  ($1, $2) RETURNING status_id, status, created_at
 `
 
 type CreateStatusBasicParams struct {
-	Status sql.NullString `db:"status" json:"status"`
-	Rv     int32          `db:"rv" json:"rv"`
+	Status string `db:"status" json:"status"`
+	Rv     int32  `db:"rv" json:"rv"`
 }
 
 type CreateStatusBasicRow struct {
-	StatusID int64          `db:"status_id" json:"status_id"`
-	Status   sql.NullString `db:"status" json:"status"`
+	StatusID  int64     `db:"status_id" json:"status_id"`
+	Status    string    `db:"status" json:"status"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
 }
 
 func (q *Queries) CreateStatusBasic(ctx context.Context, arg CreateStatusBasicParams) (CreateStatusBasicRow, error) {
 	row := q.queryRow(ctx, q.createStatusBasicStmt, createStatusBasic, arg.Status, arg.Rv)
 	var i CreateStatusBasicRow
-	err := row.Scan(&i.StatusID, &i.Status)
+	err := row.Scan(&i.StatusID, &i.Status, &i.CreatedAt)
 	return i, err
 }
 
-const deleteStatus = `-- name: DeleteStatus :exec
+const deleteStatus = `-- name: DeleteStatus :one
 UPDATE
-  industries 
+  statuses 
 SET 
   (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  industry_id = $1
+  status_id = $1 RETURNING status_id, deleted_at, deleted
 `
 
-func (q *Queries) DeleteStatus(ctx context.Context, industryID int64) error {
-	_, err := q.exec(ctx, q.deleteStatusStmt, deleteStatus, industryID)
-	return err
+type DeleteStatusRow struct {
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
+}
+
+func (q *Queries) DeleteStatus(ctx context.Context, statusID int64) (DeleteStatusRow, error) {
+	row := q.queryRow(ctx, q.deleteStatusStmt, deleteStatus, statusID)
+	var i DeleteStatusRow
+	err := row.Scan(&i.StatusID, &i.DeletedAt, &i.Deleted)
+	return i, err
 }
 
 const getStatusById = `-- name: GetStatusById :one
 SELECT 
-  status_id, status, created_at, updated_at
+  status_id, status, created_at
 FROM 
   statuses
 WHERE 
@@ -57,21 +66,15 @@ WHERE
 `
 
 type GetStatusByIdRow struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	CreatedAt time.Time      `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	StatusID  int64     `db:"status_id" json:"status_id"`
+	Status    string    `db:"status" json:"status"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
 }
 
 func (q *Queries) GetStatusById(ctx context.Context, statusID int64) (GetStatusByIdRow, error) {
 	row := q.queryRow(ctx, q.getStatusByIdStmt, getStatusById, statusID)
 	var i GetStatusByIdRow
-	err := row.Scan(
-		&i.StatusID,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
+	err := row.Scan(&i.StatusID, &i.Status, &i.CreatedAt)
 	return i, err
 }
 
@@ -85,13 +88,13 @@ WHERE
 `
 
 type GetStatusByNameRow struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	CreatedAt time.Time      `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	Status    string       `db:"status" json:"status"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
-func (q *Queries) GetStatusByName(ctx context.Context, status sql.NullString) (GetStatusByNameRow, error) {
+func (q *Queries) GetStatusByName(ctx context.Context, status string) (GetStatusByNameRow, error) {
 	row := q.queryRow(ctx, q.getStatusByNameStmt, getStatusByName, status)
 	var i GetStatusByNameRow
 	err := row.Scan(
@@ -113,10 +116,10 @@ WHERE
 `
 
 type GetStatusesRow struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	CreatedAt time.Time      `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	Status    string       `db:"status" json:"status"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
 func (q *Queries) GetStatuses(ctx context.Context) ([]GetStatusesRow, error) {
@@ -157,15 +160,15 @@ WHERE
 `
 
 type UpdateSatusByIdParams struct {
-	StatusID int64          `db:"status_id" json:"status_id"`
-	Status   sql.NullString `db:"status" json:"status"`
-	Rv       int32          `db:"rv" json:"rv"`
+	StatusID int64  `db:"status_id" json:"status_id"`
+	Status   string `db:"status" json:"status"`
+	Rv       int32  `db:"rv" json:"rv"`
 }
 
 type UpdateSatusByIdRow struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	Status    string       `db:"status" json:"status"`
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
 func (q *Queries) UpdateSatusById(ctx context.Context, arg UpdateSatusByIdParams) (UpdateSatusByIdRow, error) {
@@ -185,15 +188,15 @@ WHERE
 `
 
 type UpdateSatusByNameParams struct {
-	Status   sql.NullString `db:"status" json:"status"`
-	Status_2 sql.NullString `db:"status_2" json:"status_2"`
-	Rv       int32          `db:"rv" json:"rv"`
+	Status   string `db:"status" json:"status"`
+	Status_2 string `db:"status_2" json:"status_2"`
+	Rv       int32  `db:"rv" json:"rv"`
 }
 
 type UpdateSatusByNameRow struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	Status    string       `db:"status" json:"status"`
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
 func (q *Queries) UpdateSatusByName(ctx context.Context, arg UpdateSatusByNameParams) (UpdateSatusByNameRow, error) {

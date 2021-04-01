@@ -4,7 +4,6 @@ package pgdb
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -34,7 +33,7 @@ type Querier interface {
 	DeleteIndustry(ctx context.Context, industryID int64) (DeleteIndustryRow, error)
 	DeletePosition(ctx context.Context, positionID int64) error
 	DeleteRole(ctx context.Context, roleID int64) error
-	DeleteStatus(ctx context.Context, industryID int64) error
+	DeleteStatus(ctx context.Context, statusID int64) (DeleteStatusRow, error)
 	DeleteTeam(ctx context.Context, teamID int64) error
 	DeleteTeamsAppsCompanies(ctx context.Context, teamAppCompanyID int64) error
 	GetAppById(ctx context.Context, appID int64) (GetAppByIdRow, error)
@@ -56,7 +55,7 @@ type Querier interface {
 	GetRoleByName(ctx context.Context, role string) (GetRoleByNameRow, error)
 	GetRoles(ctx context.Context) ([]GetRolesRow, error)
 	GetStatusById(ctx context.Context, statusID int64) (GetStatusByIdRow, error)
-	GetStatusByName(ctx context.Context, status sql.NullString) (GetStatusByNameRow, error)
+	GetStatusByName(ctx context.Context, status string) (GetStatusByNameRow, error)
 	GetStatuses(ctx context.Context) ([]GetStatusesRow, error)
 	GetTeamById(ctx context.Context, teamID int64) (GetTeamByIdRow, error)
 	GetTeamByName(ctx context.Context, team string) (GetTeamByNameRow, error)

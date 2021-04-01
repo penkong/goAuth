@@ -24,7 +24,7 @@ CREATE TABLE "industries" (
 
 CREATE TABLE "statuses" (
   "status_id" BIGSERIAL PRIMARY KEY,
-  "status" varchar(50),
+  "status" varchar(50) NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz,
   "deleted_at" timestamptz,

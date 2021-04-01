@@ -37,6 +37,8 @@ func deleteRandomIndustry(t *testing.T, i int64) {
 	require.NoError(t, err)
 	require.NotEmpty(t, idel)
 
+	require.NotZero(t, idel.IndustryID)
+
 	require.Equal(t, idel.Deleted, sql.NullBool(sql.NullBool{Bool: true, Valid: true}))
 	require.Equal(t, idel.DeletedAt, sql.NullTime(sql.NullTime{Time: idel.DeletedAt.Time, Valid: true}))
 }
@@ -44,7 +46,6 @@ func deleteRandomIndustry(t *testing.T, i int64) {
 func TestCreateIndustryBasic(t *testing.T) {
 	ic, _ := createRanodmIndustry(t)
 	deleteRandomIndustry(t, ic.IndustryID)
-
 }
 
 func TestDeleteIndustry(t *testing.T) {
@@ -90,7 +91,6 @@ func TestGetIndustryById(t *testing.T) {
 	require.WithinDuration(t, ic.CreatedAt, ig.CreatedAt, time.Second)
 
 	deleteRandomIndustry(t, ig.IndustryID)
-
 }
 
 func TestGetIndustryByName(t *testing.T) {
@@ -122,5 +122,4 @@ func TestUpdateIndustryById(t *testing.T) {
 	require.NotEqual(t, iu.Industry, ic.Industry)
 
 	deleteRandomIndustry(t, iu.IndustryID)
-
 }

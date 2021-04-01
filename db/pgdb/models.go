@@ -149,12 +149,12 @@ type Role struct {
 }
 
 type Status struct {
-	StatusID  int64          `db:"status_id" json:"status_id"`
-	Status    sql.NullString `db:"status" json:"status"`
-	CreatedAt time.Time      `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
-	DeletedAt sql.NullTime   `db:"deleted_at" json:"deleted_at"`
-	Deleted   sql.NullBool   `db:"deleted" json:"deleted"`
+	StatusID  int64        `db:"status_id" json:"status_id"`
+	Status    string       `db:"status" json:"status"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	Deleted   sql.NullBool `db:"deleted" json:"deleted"`
 	// use for handle hybrid concurrncy
 	Rv int32 `db:"rv" json:"rv"`
 }

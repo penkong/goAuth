@@ -2,11 +2,11 @@
 INSERT INTO 
   statuses(status, rv)
 VALUES 
-  ($1, $2) RETURNING status_id, status;
+  ($1, $2) RETURNING status_id, status, created_at;
 
 -- name: GetStatusById :one
 SELECT 
-  status_id, status, created_at, updated_at
+  status_id, status, created_at
 FROM 
   statuses
 WHERE 
@@ -44,10 +44,10 @@ SET
 WHERE
   status = $1 AND deleted = false RETURNING status_id, status, updated_at;
 
--- name: DeleteStatus :exec
+-- name: DeleteStatus :one
 UPDATE
-  industries 
+  statuses 
 SET 
   (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  industry_id = $1;
+  status_id = $1 RETURNING status_id, deleted_at, deleted;
