@@ -29,19 +29,9 @@ func RandomString(n int) string {
 		sb.WriteByte(c)
 	}
 
-	return sb.String()
+	return sb.String() + "-of-test"
 }
 
 func RandomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(6))
 }
-
-func RandomUserName() string {
-	return RandomString(6)
-}
-
-func RandomHashePass() string{
-	return RandomString(30)
-}
-
-

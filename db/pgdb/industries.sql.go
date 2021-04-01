@@ -13,7 +13,7 @@ const createIndustryBasic = `-- name: CreateIndustryBasic :one
 INSERT INTO 
   industries(industry, how_clean, rv)
 VALUES 
-  ($1, $2, $3) RETURNING industry_id, industry
+  ($1, $2, $3) RETURNING industry_id, industry, how_clean, created_at
 `
 
 type CreateIndustryBasicParams struct {
@@ -23,29 +23,44 @@ type CreateIndustryBasicParams struct {
 }
 
 type CreateIndustryBasicRow struct {
-	IndustryID int64  `db:"industry_id" json:"industry_id"`
-	Industry   string `db:"industry" json:"industry"`
+	IndustryID int64     `db:"industry_id" json:"industry_id"`
+	Industry   string    `db:"industry" json:"industry"`
+	HowClean   int32     `db:"how_clean" json:"how_clean"`
+	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 }
 
 func (q *Queries) CreateIndustryBasic(ctx context.Context, arg CreateIndustryBasicParams) (CreateIndustryBasicRow, error) {
 	row := q.queryRow(ctx, q.createIndustryBasicStmt, createIndustryBasic, arg.Industry, arg.HowClean, arg.Rv)
 	var i CreateIndustryBasicRow
-	err := row.Scan(&i.IndustryID, &i.Industry)
+	err := row.Scan(
+		&i.IndustryID,
+		&i.Industry,
+		&i.HowClean,
+		&i.CreatedAt,
+	)
 	return i, err
 }
 
-const deleteIndustry = `-- name: DeleteIndustry :exec
+const deleteIndustry = `-- name: DeleteIndustry :one
 UPDATE
   industries 
 SET 
   (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  industry_id = $1
+  industry_id = $1 RETURNING industry_id, deleted_at, deleted
 `
 
-func (q *Queries) DeleteIndustry(ctx context.Context, industryID int64) error {
-	_, err := q.exec(ctx, q.deleteIndustryStmt, deleteIndustry, industryID)
-	return err
+type DeleteIndustryRow struct {
+	IndustryID int64        `db:"industry_id" json:"industry_id"`
+	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	Deleted    sql.NullBool `db:"deleted" json:"deleted"`
+}
+
+func (q *Queries) DeleteIndustry(ctx context.Context, industryID int64) (DeleteIndustryRow, error) {
+	row := q.queryRow(ctx, q.deleteIndustryStmt, deleteIndustry, industryID)
+	var i DeleteIndustryRow
+	err := row.Scan(&i.IndustryID, &i.DeletedAt, &i.Deleted)
+	return i, err
 }
 
 const getIndustries = `-- name: GetIndustries :many

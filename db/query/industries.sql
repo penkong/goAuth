@@ -2,7 +2,7 @@
 INSERT INTO 
   industries(industry, how_clean, rv)
 VALUES 
-  ($1, $2, $3) RETURNING industry_id, industry;
+  ($1, $2, $3) RETURNING industry_id, industry, how_clean, created_at;
 
 -- name: GetIndustryById :one
 SELECT 
@@ -37,10 +37,10 @@ FROM
 WHERE 
   industry_id = $1 AND deleted = false;
 
--- name: DeleteIndustry :exec
+-- name: DeleteIndustry :one
 UPDATE
   industries 
 SET 
   (updated_at, deleted_at, deleted) = (now(), now(), true)
 WHERE
-  industry_id = $1;
+  industry_id = $1 RETURNING industry_id, deleted_at, deleted;

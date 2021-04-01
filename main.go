@@ -28,7 +28,6 @@ func main() {
 		log.Fatal("db not connected!!!", err)
 	}
 
-
 	// Create new Store - DB logic
 
 	// Create Server Instance

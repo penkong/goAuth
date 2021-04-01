@@ -31,7 +31,7 @@ type Querier interface {
 	DeleteBankAccount(ctx context.Context, bankAccountID int64) error
 	DeleteBankAccountAll(ctx context.Context, bankAccountAllID uuid.UUID) error
 	DeleteCompany(ctx context.Context, companyID int32) error
-	DeleteIndustry(ctx context.Context, industryID int64) error
+	DeleteIndustry(ctx context.Context, industryID int64) (DeleteIndustryRow, error)
 	DeletePosition(ctx context.Context, positionID int64) error
 	DeleteRole(ctx context.Context, roleID int64) error
 	DeleteStatus(ctx context.Context, industryID int64) error
