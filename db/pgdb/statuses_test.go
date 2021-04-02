@@ -13,7 +13,7 @@ import (
 func createRandomStatus(t *testing.T) (CreateStatusBasicRow, CreateStatusBasicParams) {
 	arg := CreateStatusBasicParams{
 		Status: util.RandomString(7),
-		Rv: 0,
+		Rv:     0,
 	}
 
 	sc, err := testQueries.CreateStatusBasic(context.Background(), arg)
@@ -71,4 +71,3 @@ func TestGetStatuses(t *testing.T) {}
 func TestUpdateStatusById(t *testing.T) {}
 
 func TestUpdateStatusByName(t *testing.T) {}
-

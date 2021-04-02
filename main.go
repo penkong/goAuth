@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -35,7 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatal("server creation error!!!", err)
 	}
-	fmt.Println("server connected!!!")
+
 	// Start up server on port 5050
 	err = server.Start()
 	if err != nil {

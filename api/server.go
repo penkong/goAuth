@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/penkong/goAuth/controllers"
 	token "github.com/penkong/goAuth/services"
+	"github.com/techschool/simplebank/util"
 
-	"github.com/rs/cors"
+	ctrls "github.com/penkong/goAuth/controllers"
+	"github.com/penkong/goAuth/db/pgdb"
 
-	// db "github.com/penkong/goAuth/db/sqlc"
-	// "github.com/techschool/simplebank/util"
 	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
 )
 
-// Server serves HTTP requests for our banking service.
+// Server serves HTTP requests for auth service.
 type Server struct {
-	// config util.Config
-	// store      db.Store
+	config     util.Config
+	store      pgdb.Store
 	tokenMaker token.Maker
 	r          *httprouter.Router
 }
@@ -40,7 +40,7 @@ func NewServer() (*Server, error) {
 
 func (server *Server) setupRouter() {
 	r := httprouter.New()
-	uc := controllers.NewAuthController()
+	uc := ctrls.NewAuthController()
 	r.POST("/v1/auth/login", uc.Login)
 	r.POST("/v1/auth/signup", uc.Signup)
 	r.GET("/v1/auth/logout", uc.Logout)
