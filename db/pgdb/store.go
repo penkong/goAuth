@@ -16,6 +16,8 @@ type Store struct {
 	db *sql.DB
 }
 
+var txKey = struct{}{}
+
 func NewStore(db *sql.DB) *Store {
 	return &Store{
 		db: db,
@@ -60,10 +62,14 @@ type ExampleTxParams struct {
 
 type ExampleTxResult struct {}
 
+// dead lock 
+
 func (store *Store) ExampleTx(ctx context.Context, arg ExampleTxParams) (ExampleTxResult, error) {
 	var res ExampleTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
+		txName := ctx.Value(txKey)
+		fmt.Println(txName, "created")
 		var err error
 		// res.Field1, err = q.CreateAppBasic(ctx, ExampleTxParams{
 		// 	//
@@ -75,6 +81,9 @@ func (store *Store) ExampleTx(ctx context.Context, arg ExampleTxParams) (Example
 		// 	//
 		// })
 		// ...
+		// lock mechnism
+		// use for update at end of query statment
+
 		return nil
 	})
 

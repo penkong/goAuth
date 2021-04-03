@@ -97,3 +97,18 @@ id uuid DEFAULT uuid_generate_v4 ()
 ===============
 
 go mod init github.com/penkong/goAtuh
+
+deadlock cost by the foreign key constraits 
+normally to lock db 
+
+in a transaction child table (contain foreign key) start a query
+  tx continue
+  if any query exec against parent tabke deadlock happen 
+  we must inform in  parent query that foreign key in this context will not update
+transaction done
+
+select * from accounts where id = $1 limit 1 for update
+
+but to not deadlock happen
+select * from accounts where id = $1 limit for no key update
+update accounts set balance = $2 where id = $1 returnning *;

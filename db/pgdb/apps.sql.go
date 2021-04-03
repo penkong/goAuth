@@ -74,7 +74,7 @@ SELECT
 FROM 
   apps
 WHERE 
-  app_id = $1 AND deleted = false
+  app_id = $1 AND deleted = false FOR NO KEY UPDATE
 `
 
 type GetAppByIdRow struct {
