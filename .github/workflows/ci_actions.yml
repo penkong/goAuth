@@ -1,0 +1,29 @@
+name: auth-service-ci-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code into the go module
+        uses: actions/checkout@v2
+        id: checkout
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+        id: setup GO
+
+      - name: Test
+        run: make test
+        id: Test
+      # - name: Build
+      #   run: go build -v ./...
+      #   id: Build

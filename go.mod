@@ -1,6 +1,6 @@
 module github.com/penkong/goAuth
 
-go 1.15
+go 1.16
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -10,6 +10,6 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
-	github.com/techschool/simplebank v0.0.0-20210401195343-67779a204568
+	github.com/techschool/simplebank v0.0.0-20210403145537-e2443c3eefea
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 )
