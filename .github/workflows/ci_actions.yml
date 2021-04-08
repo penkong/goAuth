@@ -45,9 +45,6 @@ jobs:
           sudo mv migrate.linux-amd64 /usr/bin/migrate
           which migrate
 
-      - name: Create Database
-        run: make createdb
-
       - name: Migrate
         run: make migrateup
 
