@@ -60,9 +60,9 @@ type ExampleTxParams struct {
 	Field2 string
 }
 
-type ExampleTxResult struct {}
+type ExampleTxResult struct{}
 
-// dead lock 
+// dead lock
 
 func (store *Store) ExampleTx(ctx context.Context, arg ExampleTxParams) (ExampleTxResult, error) {
 	var res ExampleTxResult
@@ -86,7 +86,6 @@ func (store *Store) ExampleTx(ctx context.Context, arg ExampleTxParams) (Example
 
 		return nil
 	})
-
 
 	return res, err
 }

@@ -16,13 +16,13 @@ var db *sql.DB
 func main() {
 
 	// Load up config files with viper
-	config, err := util.LoadConfig(".")
+	conf, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
 
 	// Open connection to database in this case Postgres13
-	_, err = sql.Open(config.DBDriver, config.DBSource)
+	_, err = sql.Open(conf.DBDriver, conf.DBSource)
 	if err != nil {
 		log.Fatal("db not connected!!!", err)
 	}
@@ -30,7 +30,7 @@ func main() {
 	// Create new Store - DB logic
 
 	// Create Server Instance
-	server, err := api.NewServer()
+	server, err := api.NewServer(conf)
 	if err != nil {
 		log.Fatal("server creation error!!!", err)
 	}
@@ -40,4 +40,5 @@ func main() {
 	if err != nil {
 		log.Fatal("server start problem", err)
 	}
+
 }
