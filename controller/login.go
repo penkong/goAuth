@@ -1,4 +1,4 @@
-package ctrls
+package controller
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 )
 
 // Login is something
-func (ac AuthController) Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (ac AuthCtrl) Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	fmt.Println(r)
 	d := "hello"
 	err := json.NewEncoder(w).Encode(d)
