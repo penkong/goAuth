@@ -1,11 +1,11 @@
 # step 1
 postgres:
-	docker run --name pg13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres
+	docker run --name pg13 --network pg-net -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres
 # docker exec -it mysql mysql -uroot -psecret <name of db>
 # step 2
 pgadmin:
-	docker run --name pgadmin4 -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=nazemi.works@gmail.com' -e 'PGADMIN_DEFAULT_PASSWORD=secret' --link pg13:pg13 -d dpage/pgadmin4
-
+	docker run --name pgadmin4 --network pg-net -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=nazemi.works@gmail.com' -e 'PGADMIN_DEFAULT_PASSWORD=secret' --link pg13:pg13 -d dpage/pgadmin4
+# check connection ip with docker logs pgadmin4
 
 # step 3
 createdb: 
@@ -55,3 +55,13 @@ it:
 	git pull && docker build -t penkong/authservice . && docker push penkong/authservice
 
 .PHONY: postgres createdb migrateup migratedown sqlc
+
+
+# docker network crete pg-net
+# docker network ls
+
+mongo:
+	docker run -p 27017:27017 -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --network pg-net --name mongo mongo
+
+mongoExpress:
+	docker run -p 8081:8081 -d -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password -e ME_CONFIG_MONGODB_SERVER=mongo -e ME_CONFIG_MONGODB_PORT=27017 --name mongo-express --network pg-net mongo-express
